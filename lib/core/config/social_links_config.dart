@@ -95,7 +95,7 @@ class SocialLinksConfig {
   /// Example:
   /// https://github.com/username/myfolio/releases/download/v1.0.0/myfolio-v1.0.0.apk
   static const String apkDownloadUrl =
-      'https://github.com/yourusername/myfolio/releases/download/v1.0.0/myfolio-v1.0.0.apk';
+      'https://github.com/ahsxndev/Portfolio/releases/download/v1.0.0/app-release.apk';
 
   // ============================================
   // 📧 EMAIL TEMPLATE CONFIGURATION

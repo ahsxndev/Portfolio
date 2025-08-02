@@ -30,7 +30,7 @@ class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isSmallScreen = screenWidth < 400;
+    final bool isSmallScreen = screenWidth < 500;
     final bool isMobile = Responsive.isMobile(context);
     final bool isContact = widget.isContact;
 
