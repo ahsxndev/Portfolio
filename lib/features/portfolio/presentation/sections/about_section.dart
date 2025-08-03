@@ -155,7 +155,7 @@ class _StatCard extends StatelessWidget {
           Text(
             number,
             style: GoogleFonts.montserrat(
-              fontSize: isSmallScreen? 20 :24,
+              fontSize: isSmallScreen? 18 :24,
               fontWeight: FontWeight.w800,
               color: AppColors.kYellow,
             ),
@@ -165,7 +165,7 @@ class _StatCard extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: GoogleFonts.montserrat(
-              fontSize: isSmallScreen? 9: 12,
+              fontSize: isSmallScreen? 8: 12,
               fontWeight: FontWeight.w500,
               color: const Color(0xCCFFFFFF),
               height: 1.2,

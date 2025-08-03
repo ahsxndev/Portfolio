@@ -45,5 +45,14 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <!-- Network usage descriptions for App Store compliance -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
+    <!-- Description for network usage -->
+    <key>NSNetworkUsageDescription</key>
+    <string>This app requires internet access to load social media links, download APK files, and access external resources.</string>
   </dict>
 </plist>

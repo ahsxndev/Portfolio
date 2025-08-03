@@ -20,10 +20,14 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen>
+    with SingleTickerProviderStateMixin {
   late final NavigationController navigationController;
   late final ScrollController _scrollController;
+  late final AnimationController _scrollToTopController;
+  late final Animation<double> _scrollToTopAnimation;
   int _activeIndex = 0; // Track active nav item
+  bool _showScrollToTop = false; // Track scroll to top button visibility
 
   @override
   void initState() {
@@ -31,17 +35,42 @@ class _MainScreenState extends State<MainScreen> {
     navigationController = NavigationController();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
+    // Initialize scroll to top animation
+    _scrollToTopController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scrollToTopAnimation = CurvedAnimation(
+      parent: _scrollToTopController,
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _scrollToTopController.dispose();
     super.dispose();
   }
 
   void _onScroll() {
     final scrollPosition = _scrollController.position.pixels;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Show scroll to top button when user scrolls down more than screen height
+    final shouldShow = scrollPosition > screenHeight * 0.5;
+    if (shouldShow != _showScrollToTop) {
+      setState(() {
+        _showScrollToTop = shouldShow;
+      });
+      if (shouldShow) {
+        _scrollToTopController.forward();
+      } else {
+        _scrollToTopController.reverse();
+      }
+    }
 
     // Get section positions
     final aboutPosition = _getSectionPosition(navigationController.aboutKey);
@@ -94,11 +123,20 @@ class _MainScreenState extends State<MainScreen> {
     item.onTap();
   }
 
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isMobile = Responsive.isMobile(context);
     final bool isTablet = Responsive.isTablet(context);
     final bool isDesktop = Responsive.isDesktop(context);
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 500;
 
     return SafeArea(
       child: Scaffold(
@@ -107,41 +145,65 @@ class _MainScreenState extends State<MainScreen> {
             ? CustomDrawer(activeIndex: _activeIndex)
             : null,
         appBar: _buildAppBar(context, isMobile, isTablet, isDesktop),
-        body: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          controller: _scrollController,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                key: navigationController.homeKey,
-                child: const HomeSection(),
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    key: navigationController.homeKey,
+                    child: const HomeSection(),
+                  ),
+                  SizedBox(height: isMobile ? 50 : 70),
+                  Container(
+                    key: navigationController.aboutKey,
+                    child: const AboutSection(),
+                  ),
+                  SizedBox(height: isMobile ? 60 : 70),
+                  Container(
+                    key: navigationController.servicesKey,
+                    child: const ServicesSection(),
+                  ),
+                  SizedBox(height: isMobile ? 60 : 70),
+                  Container(
+                    key: navigationController.projectsKey,
+                    child: const ProjectsSection(),
+                  ),
+                  SizedBox(height: isMobile ? 60 : 70),
+                  Container(
+                    key: navigationController.contactKey,
+                    child: ContactSection(),
+                  ),
+                  SizedBox(height: isMobile ? 60 : 70),
+                  Footer(),
+                  SizedBox(height: isMobile ? 30 : 40),
+                ],
               ),
-              SizedBox(height: isMobile ? 50 : 70),
-              Container(
-                key: navigationController.aboutKey,
-                child: const AboutSection(),
+            ),
+            // Scroll to Top Button - Only show on small screens
+            if (isSmallScreen)
+              Positioned(
+                right: 16,
+                bottom: 20,
+                child: AnimatedBuilder(
+                  animation: _scrollToTopAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scrollToTopAnimation.value,
+                      child: Opacity(
+                        opacity: _scrollToTopAnimation.value,
+                        child: _ScrollToTopButton(
+                          onTap: _scrollToTop,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-              SizedBox(height: isMobile ? 60 : 70),
-              Container(
-                key: navigationController.servicesKey,
-                child: const ServicesSection(),
-              ),
-              SizedBox(height: isMobile ? 60 : 70),
-              Container(
-                key: navigationController.projectsKey,
-                child: const ProjectsSection(),
-              ),
-              SizedBox(height: isMobile ? 60 : 70),
-              Container(
-                key: navigationController.contactKey,
-                child: ContactSection(),
-              ),
-              SizedBox(height: isMobile ? 60 : 70),
-              Footer(),
-              SizedBox(height: isMobile ? 30 : 40),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -355,6 +417,112 @@ class _TapMenuIconButtonState extends State<_TapMenuIconButton>
           ),
         ),
       ),
+    );
+  }
+}
+
+// Professional Scroll to Top Button
+class _ScrollToTopButton extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _ScrollToTopButton({required this.onTap});
+
+  @override
+  State<_ScrollToTopButton> createState() => _ScrollToTopButtonState();
+}
+
+class _ScrollToTopButtonState extends State<_ScrollToTopButton>
+    with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+  late AnimationController _bounceController;
+  late Animation<double> _bounceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 150),
+      vsync: this,
+    );
+    _bounceAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _bounceController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _bounceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _bounceAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _bounceAnimation.value,
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.kBlack,
+                  AppColors.kBlack.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.black30,
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+                BoxShadow(
+                  color: AppColors.kYellow.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              border: Border.all(
+                color: _isPressed ? AppColors.kYellow : AppColors.white20,
+                width: 2,
+              ),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(28),
+              child: InkWell(
+                onTap: () {
+                  widget.onTap();
+                  _bounceController.forward().then((_) {
+                    _bounceController.reverse();
+                  });
+                },
+                onHighlightChanged: (pressed) {
+                  setState(() => _isPressed = pressed);
+                },
+                borderRadius: BorderRadius.circular(28),
+                splashColor: AppColors.yellow30,
+                highlightColor: AppColors.yellow20,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(26),
+                  ),
+                  child: Icon(
+                    Icons.keyboard_arrow_up_rounded,
+                    size: 32,
+                    color: _isPressed ? AppColors.kYellow : Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
