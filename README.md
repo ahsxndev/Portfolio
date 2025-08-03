@@ -1,85 +1,60 @@
-# 🚀 MyFolio - Flutter Portfolio App
+# 🧑‍💻 MyFolio - Flutter Portfolio App
 
-A modern, responsive, and highly customizable Flutter portfolio application designed to showcase your skills, projects, and professional journey. Built with clean architecture principles and a focus on user experience.
+A modern, minimalist, and highly customizable Flutter portfolio website or application to showcase your skills, projects, and professional journey. Designed for fast setup and easy editing—even if you're not a Flutter developer!
 
+<div align="center">
+   
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+</div>
+
+<img src="https://github.com/user-attachments/assets/4ea9e626-a409-4d3f-9bb1-35485188cc94" alt="Hero page 3" width="1440" height="951"/>
+<img src="https://github.com/user-attachments/assets/2f494cd3-2675-4bd2-986e-ad35a656a9f1" alt="Hero page 2" width="1440" height="951"/>
+
+<div align="center">
+   
+[![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](#)
+[![GitHub Forks](https://img.shields.io/github/forks/ahsxndev/Portfolio.svg?style=social&label=Fork&maxAge=2592000)](https://github.com/ahsxndev/Portfolio/fork)
+[![GitHub Issues](https://img.shields.io/github/issues/ahsxndev/Portfolio.svg?style=flat&label=Issues&maxAge=2592000)](https://github.com/ahsxndev/Portfolio/issues)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat&label=Contributions&colorA=red&colorB=black)](https://github.com/ahsxndev/Portfolio/pulls)
+</div>
+
+---
+
+## 🧑‍💻 MyFolio
+
+A portfolio website for developers built using Flutter. Includes:
+
+- Home
+- About
+- Services
+- Projects (Portfolio)
+- Contact
 
 ## ✨ Features
 
-### 🎨 **Modern Design**
-- Clean and professional UI design
-- Responsive layout for all screen sizes
-- Smooth animations and transitions
-- Custom color scheme and typography
+- 🖥️ Modern, clean, and minimalist UI
+- 📱 Responsive for mobile, tablet, desktop, and web
+- 💨 Smooth animations & transitions
+- 🛠️ Easy to customize: just edit config files!
+- 📦 Cross-platform: Android, iOS, Web, Windows, macOS, Linux
+- ⚡ SEO optimized for web
+- 🔗 Social media & email/WhatsApp integration
+- 🧑‍💼 Business ready: contact forms, service detail modals, project showcase
 
-### 📱 **Cross-Platform**
-- iOS, Android, Web, Windows, macOS, and Linux support
-- Progressive Web App (PWA) capabilities
-- Responsive design that works on all devices
+## 🔗 Useful links
 
-### 🛠️ **Core Sections**
-- **Home**: Eye-catching introduction with animated text
-- **About**: Professional bio and skills showcase
-- **Services**: Detailed service offerings with modal dialogs
-- **Projects**: Portfolio showcase with GitHub integration
-- **Contact**: Multi-channel contact form with email integration
+🌐 Website: https://ahsanzaman.dev  
+📱 Android APK: [Direct Download](https://github.com/ahsxndev/Portfolio/releases/tag/v1.0.0/app-release.apk)  
+🐙 GitHub: [ahsxndev/myfolio](https://github.com/ahsxndev/Portfolio)
 
-### 🎯 **Professional Features**
-- **APK Download**: Direct download link for Android app
-- **Social Media Integration**: LinkedIn, GitHub, Twitter, and more
-- **Email Contact**: Real email functionality via EmailJS
-- **WhatsApp Integration**: Direct messaging capability
-- **Responsive Navigation**: Drawer for mobile, tabs for desktop
-
-### 💼 **Business Ready**
-- SEO optimized for web deployment
-- Professional footer with legal links
-- Contact form with validation
-- Service detail modals
-- Project showcase with technology tags
-
-## 🏗️ Architecture
-
-This project follows **Clean Architecture** principles with a **Feature-Based** folder structure:
-
-```
-lib/
-├── core/                          # Core functionality
-│   ├── config/                    # Configuration files
-│   │   ├── user_info_config.dart # 👤 Your personal information
-│   │   ├── projects_config.dart  # 🚀 Your projects data
-│   │   └── social_links_config.dart # 🔗 Social media links
-│   └── constants/                 # App constants
-│       ├── app_colors.dart       # 🎨 Color scheme
-│       ├── app_text_styles.dart  # 📝 Typography
-│       └── responsive.dart       # 📱 Responsive utilities
-├── features/                      # Feature modules
-│   └── portfolio/                # Portfolio feature
-│       ├── models/               # Data models
-│       ├── data/                 # Data layer
-│       └── presentation/         # UI layer
-│           ├── screens/          # Screen widgets
-│           ├── sections/         # Section widgets
-│           └── widgets/          # Reusable widgets
-└── main.dart                     # App entry point
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Flutter SDK (3.8.1 or later)
-- Dart SDK (3.3.0 or later)
-- IDE (VS Code, Android Studio, or IntelliJ)
-
-### Installation
+## 🏗️ Quick Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ahsxndev/myfolio.git
-   cd myfolio
+   git clone https://github.com/ahsxndev/Portfolio.git
+   cd Portfolio
    ```
 
 2. **Install dependencies**
@@ -87,174 +62,61 @@ lib/
    flutter pub get
    ```
 
-3. **Run the application**
+3. **Run the app**
    ```bash
    flutter run
    ```
 
-4. **Build for production**
-   ```bash
-   # For Web
-   flutter build web
-   
-   # For Android
-   flutter build apk --release
-   
-   # For iOS
-   flutter build ios --release
-   ```
+4. **Customize config files**
+   - `lib/core/config/user_info_config.dart` — your info
+   - `lib/core/config/projects_config.dart` — your projects
+   - `lib/core/config/social_links_config.dart` — your socials
 
 ## ⚙️ Customization
 
-### 1. 👤 Personal Information
+- **Personal Info**: Edit your name, job title, email, phone in `user_info_config.dart`
+- **Projects**: Add/edit projects in `projects_config.dart`
+- **Social Links**: Update your social profiles in `social_links_config.dart`
+- **Images**: Replace profile and project images in `assets/images/`
 
-Edit `lib/core/config/user_info_config.dart`:
+## ⚡ Deployment
 
-```dart
-class UserInfoConfig {
-  static const String fullName = 'Your Name';
-  static const String firstName = 'Your';
-  static const String jobTitle = 'Your Job Title';
-  static const String email = 'your.email@example.com';
-  static const String phone = '+1234567890';
-  // ... more configurations
-}
-```
+- **Web**: `flutter build web --release`
+- **Android**: `flutter build apk --release`
+- **iOS**: `flutter build ios --release`
 
-### 2. 🚀 Projects
+Deploy web app to GitHub Pages or Firebase Hosting easily!
 
-Update `lib/core/config/projects_config.dart`:
-
-```dart
-static const List<ProjectModel> projects = [
-  ProjectModel(
-    id: '1',
-    title: 'Your Project',
-    description: 'Project description...',
-    imageUrl: 'assets/images/projects/your_project.png',
-    technologies: ['Flutter', 'Dart', 'Firebase'],
-    githubUrl: 'https://github.com/yourusername/project',
-  ),
-  // Add more projects...
-];
-```
-
-### 3. 🔗 Social Links
-
-Configure `lib/core/config/social_links_config.dart`:
-
-```dart
-class SocialLinksConfig {
-  static const String linkedinUrl = 'https://linkedin.com/in/yourprofile';
-  static const String githubUrl = 'https://github.com/yourusername';
-  static const String twitterUrl = 'https://twitter.com/yourhandle';
-  // ... more social links
-}
-```
-
-### 4. 🖼️ Assets
-
-Replace the following files with your own:
-
-- `assets/images/my_pic.jpg` - Your profile picture
-- `assets/images/projects/` - Your project screenshots
-- Update `pubspec.yaml` if adding new assets
-
-## 📦 Dependencies
-
-### Core Dependencies
-- `flutter` - Flutter SDK
-- `cupertino_icons` - iOS style icons
-- `google_fonts` - Custom typography
-- `animated_text_kit` - Text animations
-- `font_awesome_flutter` - FontAwesome icons
-- `url_launcher` - External URL handling
-
-### Dev Dependencies
-- `flutter_test` - Testing framework
-- `flutter_lints` - Code analysis
-
-## 🌐 Deployment
-
-### Web Deployment
-
-1. **Build for web**
-   ```bash
-   flutter build web --release
-   ```
-
-2. **Deploy to GitHub Pages**
-   - Copy `build/web/` contents to your GitHub Pages repository
-   - Or use GitHub Actions for automatic deployment
-
-3. **Deploy to Firebase Hosting**
-   ```bash
-   firebase init hosting
-   firebase deploy
-   ```
-
-### Mobile App Stores
-
-1. **Android (Google Play Store)**
-   ```bash
-   flutter build appbundle --release
-   ```
-
-2. **iOS (App Store)**
-   ```bash
-   flutter build ios --release
-   ```
-
-## 📱 Responsive Design
-
-The app is fully responsive and adapts to different screen sizes:
-
-- **Mobile** (< 768px): Single column layout with drawer navigation
-- **Tablet** (768px - 1024px): Optimized spacing and components
-- **Desktop** (> 1024px): Multi-column layout with enhanced interactions
-
-## 🎨 Theming
-
-### Color Scheme
-The app uses a professional color palette defined in `app_colors.dart`:
-
-- Primary: Custom blue tones
-- Accent: Yellow for highlights
-- Neutral: Grayscale variants
-- Semantic: Success, warning, error colors
-
-### Typography
-Custom text styles using Montserrat font family for a modern, professional look.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🤝 Contributing
+
+Pull requests, issues, and suggestions are welcome!  
+Fork, star, and contribute your awesome ideas.
+
+- [Contribute here!](https://github.com/ahsxndev/Portfolio/pulls)
+
+---
+
 ## 🙏 Acknowledgments
 
-- Flutter team for the amazing framework
-- Font Awesome for the beautiful icons
-- Google Fonts for typography
+- Flutter team
+- Font Awesome
+- Google Fonts
 - All open-source contributors
 
-## 📞 Contact
+## 👤 Author & Contact
 
-**Ahsan Zaman** - Flutter Developer
+<div align="center">
 
-- 📧 Email: ahsanzaman.dev@gmail.com
-- 💼 LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- 🐙 GitHub: [ahsxndev](https://github.com/ahsxndev)
-- 📱 Phone: +923424083570
+### **Ahsan Zaman**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ahsxndev)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/ahxanzaman)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ahsanzaman.dev@gmail.com)
 
 ---
 
