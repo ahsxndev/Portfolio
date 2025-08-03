@@ -1,6 +1,6 @@
 # 🧑‍💻 MyFolio - Flutter Portfolio App
 
-A modern, minimalist, and highly customizable Flutter portfolio website or application to showcase your skills, projects, and professional journey. Designed for fast setup and easy editing—even if you're not a Flutter developer!
+A modern, minimalist, and highly customizable Flutter portfolio website/application to showcase your skills, projects, and professional journey. Designed for fast setup and easy editing—even if you're not a Flutter developer!
 
 <div align="center">
    
