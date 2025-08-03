@@ -20,15 +20,18 @@ class Footer extends StatelessWidget {
     final bool isSmallScreen = screenWidth < 500;
 
     return Container(
+      
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 150),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          const SizedBox(height: 40),
+          
           // Top Avatar + Name
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AvatarWidget(),
+              const AvatarWidget(),
               const SizedBox(width: 12),
               Text(
                 UserInfoConfig.fullName,
@@ -46,7 +49,7 @@ class Footer extends StatelessWidget {
           Text(
             'I create high-quality apps as quickly as possible. '
             'If you enjoy my work, feel free to reach out. '
-            'Let’s build something great together!',
+            'Let\'s build something great together!',
             textAlign: TextAlign.center,
             style: isMobile
                 ? AppTextStyles.subheading.copyWith(
@@ -71,14 +74,14 @@ class Footer extends StatelessWidget {
               children: <Widget>[
                 isMobile
                     ? const Center(child: _APKDownloadButton())
-                    : Row(
+                    : const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     _APKDownloadButton(),
 
                   ],
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
               ],
             ),
 
@@ -175,7 +178,7 @@ class Footer extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
         children: [
-          TextSpan(text: '💙', style: const TextStyle(fontSize: 16)),
+          const TextSpan(text: '💙', style: TextStyle(fontSize: 16)),
           const TextSpan(text: ' using '),
           TextSpan(
             text: 'Flutter',
@@ -283,7 +286,6 @@ class _APKDownloadButtonState extends State<_APKDownloadButton> {
   @override
   Widget build(BuildContext context) {
     final bool isMobile = Responsive.isMobile(context);
-    final bool isActive = _isHovered || _isPressed;
 
     return Container(
       margin: const EdgeInsets.only(top: 8),
