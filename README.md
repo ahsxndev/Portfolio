@@ -9,8 +9,8 @@ A modern, minimalist, and highly customizable Flutter portfolio website/applicat
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 </div>
 
-![Hero page 3](banner1.PNG)
-![Hero page 2](banner2.PNG)
+![Hero page 3](banner1.png)
+![Hero page 2](banner2.png)
 
 <div align="center">
    
