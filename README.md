@@ -79,6 +79,78 @@ A portfolio website for developers built using Flutter. Includes:
 - **Social Links**: Update your social profiles in `social_links_config.dart`
 - **Images**: Replace profile and project images in `assets/images/`
 
+## 📧 EmailJS Setup (Contact Form)
+
+This portfolio includes a contact form that sends emails via **EmailJS**. Follow these steps to set up email functionality:
+
+### 1️⃣ Create an EmailJS Account
+- Go to [emailjs.com](https://www.emailjs.com/) and sign up for a **free account**
+- Verify your email
+
+### 2️⃣ Create an Email Service
+- In the EmailJS Dashboard, go to **Email Services** (left sidebar)
+- Click **Create New Service**
+- Choose your provider (Gmail, Outlook, etc.)
+- Follow the setup wizard and **Save**
+- Copy your **Service ID** (looks like `service_xxxxx`)
+
+### 3️⃣ Create an Email Template
+- Go to **Email Templates** (left sidebar)
+- Click **Create New Template**
+- Use this template structure:
+
+```html
+<h2>New Portfolio Contact</h2>
+
+<p><strong>From:</strong> {{name}} ({{email}})</p>
+<p><strong>Service:</strong> {{service_type}}</p>
+
+<h3>Message:</h3>
+<p>{{message}}</p>
+
+<hr>
+<p><em>This message was sent from your portfolio website.</em></p>
+```
+
+- Set **To Email** to `{{to_email}}` or your actual email
+- Set **Reply-To** to `{{email}}` (so you can reply directly to the sender)
+- Click **Save**
+- Copy your **Template ID** (looks like `template_xxxxx`)
+
+### 4️⃣ Get Your API Keys
+- Go to **Account** (left sidebar) → **API Keys**
+- Copy:
+  - **Public Key** (User ID)
+  - **Private Key** (Access Token)
+
+### 5️⃣ Update Configuration
+Edit `lib/core/config/emailjs_config.dart`:
+
+```dart
+class EmailJSConfig {
+  static const String serviceId = 'service_xxxxx';      // Your Service ID
+  static const String templateId = 'template_xxxxx';    // Your Template ID
+  static const String userId = 'YOUR_PUBLIC_KEY';       // Your Public Key
+  static const String privateKey = 'YOUR_PRIVATE_KEY';  // Your Private Key
+}
+```
+
+⚠️ **Security Note**: Keep your private key secure! Don't commit it to a public GitHub repository.
+
+### 6️⃣ Test the Contact Form
+- Run the app: `flutter run`
+- Go to the **Contact** section
+- Fill in the form and send
+- Check your email!
+
+### Troubleshooting
+
+| Error | Solution |
+|-------|----------|
+| 403 - API calls disabled | Ensure you have the correct **Private Key** in `emailjs_config.dart` |
+| 400 - Parameters invalid | Check that template variable names match (use `{{name}}`, `{{email}}`, `{{message}}`) |
+| Email not received | Verify your **Service ID** and **Template ID** are correct |
+
 ## ⚡ Deployment
 
 - **Web**: `flutter build web --release`
