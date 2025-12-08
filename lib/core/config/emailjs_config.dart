@@ -17,18 +17,18 @@ library;
 class EmailJSConfig {
   /// 🔑 EmailJS Service ID
   /// Found in your EmailJS account under Email Services > [Your Service] > Service ID
-  static const String serviceId = 'service_mmandoc';
+  static const String serviceId = 'YOUR-SERVICE-ID';
 
   /// 模板 🔑 EmailJS Template ID
   /// Found in your EmailJS account under Email Templates > [Your Template] > Template ID
-  static const String templateId = 'template_z0mean9';
+  static const String templateId = 'YOUR-TEMPLATE-ID';
 
   /// 🔑 EmailJS User ID (Public Key)
   /// Found in your EmailJS account under Account > API Keys > Public Key
-  static const String userId = 'ErI33GQefPpcF0Ncx';
+  static const String userId = 'YOUR-USER-ID';
 
   /// 🔑 EmailJS Private Key (Access Token) - REQUIRED for non-browser apps
   /// Found in your EmailJS account under Account > API Keys > Private Key
   /// ⚠️ Keep this secure! Do not commit to public repositories
-  static const String privateKey = 'frwheCs8mDUFQe5R2RzBE';
+  static const String privateKey = 'YOUR-PRIVATE-KEY';
 }
