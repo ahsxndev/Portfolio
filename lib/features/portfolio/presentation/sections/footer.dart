@@ -6,7 +6,6 @@ import 'package:myfolio/core/constants/app_colors.dart';
 import 'package:myfolio/core/constants/app_text_styles.dart';
 import 'package:myfolio/core/constants/responsive.dart';
 import 'package:myfolio/core/config/user_info_config.dart';
-import 'package:myfolio/core/config/social_links_config.dart';
 import '../widgets/avatar_widget.dart';
 import '../widgets/social_icons.dart';
 
@@ -68,22 +67,6 @@ class Footer extends StatelessWidget {
           const Center(child: SocialIcons(isVertical: false)),
 
           const SizedBox(height: 40),
-
-          if (!isSmallScreen)
-            Column(
-              children: <Widget>[
-                isMobile
-                    ? const Center(child: _APKDownloadButton())
-                    : const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _APKDownloadButton(),
-
-                  ],
-                ),
-                const SizedBox(height: 40),
-              ],
-            ),
 
 
           // Responsive Bottom Layout
@@ -268,141 +251,5 @@ class _FooterLink extends StatelessWidget {
         }
       });
     }
-  }
-}
-
-/// Subtle APK Download Button for Footer
-class _APKDownloadButton extends StatefulWidget {
-  const _APKDownloadButton();
-
-  @override
-  State<_APKDownloadButton> createState() => _APKDownloadButtonState();
-}
-
-class _APKDownloadButtonState extends State<_APKDownloadButton> {
-  bool _isHovered = false;
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isMobile = Responsive.isMobile(context);
-
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
-                'Download Portfolio App:',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.black80,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          MouseRegion(
-            onEnter: (_) => setState(() => _isHovered = true),
-            onExit: (_) => setState(() => _isHovered = false),
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTapDown: (_) => setState(() => _isPressed = true),
-              onTapUp: (_) => setState(() => _isPressed = false),
-              onTapCancel: () => setState(() => _isPressed = false),
-              onTap: () => _downloadAPK(context),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 10 : 12,
-                  vertical: isMobile ? 6 : 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.android,
-                      size: isMobile ? 16 : 18,
-                      color: AppColors.kBlue,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'APK',
-                      style: TextStyle(
-                        fontSize: isMobile ? 12 : 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.kBlue,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _downloadAPK(BuildContext context) async {
-    final String url = SocialLinksConfig.apkDownloadUrl.trim();
-    if (url.isEmpty) {
-      _showSnackbar(context, 'No APK URL found.', success: false);
-      return;
-    }
-
-    final Uri uri = Uri.parse(url);
-    final bool canLaunchIt = await canLaunchUrl(uri);
-
-    if (canLaunchIt) {
-      await launchUrl(
-        uri,
-        mode: kIsWeb
-            ? LaunchMode.platformDefault
-            : LaunchMode.externalApplication,
-      );
-
-      if (context.mounted) {
-        _showSnackbar(context, 'APK download started!', success: true);
-      }
-    } else {
-      if (context.mounted) {
-        _showSnackbar(context, 'Could not download APK.', success: false);
-      }
-    }
-  }
-
-  void _showSnackbar(BuildContext context, String message,
-      {required bool success}) {
-    final color = success ? AppColors.kGreen : Colors.red;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              success ? Icons.download_done : Icons.error_outline,
-              color: Colors.white,
-              size: 18,
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: Text(message)),
-          ],
-        ),
-        backgroundColor: color,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
   }
 }

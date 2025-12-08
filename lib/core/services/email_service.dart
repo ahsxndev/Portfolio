@@ -1,9 +1,97 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import '../config/emailjs_config.dart';
 import '../config/user_info_config.dart';
 
 class EmailService {
+  /// ✅ Send email directly using EmailJS REST API
+  static Future<bool> sendEmailWithEmailJs({
+    required String name,
+    required String senderEmail,
+    required String message,
+    String? serviceType,
+    BuildContext? context,
+  }) async {
+    try {
+      final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+
+      final body = {
+        'service_id': EmailJSConfig.serviceId,
+        'template_id': EmailJSConfig.templateId,
+        'user_id': EmailJSConfig.userId,
+        'accessToken': EmailJSConfig.privateKey,
+        'template_params': {
+          'name': name,
+          'email': senderEmail,
+          'message': message,
+          'from_name': name,
+          'from_email': senderEmail,
+          'user_name': name,
+          'user_email': senderEmail,
+          'sender_name': name,
+          'sender_email': senderEmail,
+          'reply_to': senderEmail,
+          if (serviceType != null) 'service_type': serviceType,
+          if (serviceType != null) 'service': serviceType,
+        },
+      };
+
+      // ignore: avoid_print
+      print('=== EmailJS Request Data ===');
+      // ignore: avoid_print
+      print('Sender Name: $name');
+      // ignore: avoid_print
+      print('Sender Email: $senderEmail');
+      // ignore: avoid_print
+      print('Message: $message');
+      // ignore: avoid_print
+      print('Template Params: ${body['template_params']}');
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'http://localhost',
+          'User-Agent': 'Mozilla/5.0',
+        },
+        body: jsonEncode(body),
+      );
+
+      // ignore: avoid_print
+      print('EmailJS Status Code: ${response.statusCode}');
+      // ignore: avoid_print
+      print('EmailJS Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        if (context != null && context.mounted) {
+          showSuccessSnackbar(
+            context,
+            'Your message has been sent successfully!',
+          );
+        }
+        return true;
+      } else {
+        if (context != null && context.mounted) {
+          _showErrorSnackbar(
+            context,
+            'Failed to send message. Code: ${response.statusCode}',
+          );
+        }
+        return false;
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('EmailJS Error: $e');
+      if (context != null && context.mounted) {
+        _showErrorSnackbar(context, 'Error: $e');
+      }
+      return false;
+    }
+  }
+
   /// ✅ Send email using default email client
   static Future<bool> sendEmail({
     required String name,
@@ -17,7 +105,8 @@ class EmailService {
           ? 'Portfolio Inquiry: $serviceType Service'
           : 'Portfolio Contact Form Message';
 
-      final body = '''
+      final body =
+          '''
 Hello ${UserInfoConfig.fullName},
 
 You have received a new message:
@@ -41,7 +130,10 @@ This message was sent through your portfolio contact form.
       final bool launched = await launchUrl(emailUri);
 
       if (!launched && context != null && context.mounted) {
-        _showErrorSnackbar(context, 'No email client found or failed to launch.');
+        _showErrorSnackbar(
+          context,
+          'No email client found or failed to launch.',
+        );
       }
 
       return launched;
@@ -62,7 +154,8 @@ This message was sent through your portfolio contact form.
     BuildContext? context,
   }) async {
     try {
-      final whatsappMessage = '''
+      final whatsappMessage =
+          '''
 Hi ${UserInfoConfig.fullName}! 👋
 
 New message from your portfolio:
@@ -95,7 +188,10 @@ Please respond via email at $senderEmail
       }
     } catch (e) {
       if (context != null && context.mounted) {
-        _showErrorSnackbar(context, 'Error sending WhatsApp message: ${e.toString()}');
+        _showErrorSnackbar(
+          context,
+          'Error sending WhatsApp message: ${e.toString()}',
+        );
       }
       return false;
     }

@@ -68,7 +68,7 @@ class SocialLinksConfig {
   ///
   /// Example: https://drive.google.com/file/d/1ABC123def456GHI789jkl/view
   static const String cvDownloadUrl =
-      'https://drive.google.com/drive/folders/1AaJt4-oVzAYCNm-3YRW8fD9aBVQOQFWE';
+      'https://drive.google.com/file/d/1gN9N2Cj4Kqv4B-xQeFqBBSJ07JcmE9l7/view';
 
   /// 🔗 APK Download URL for your Portfolio App
   ///
@@ -97,6 +97,10 @@ class SocialLinksConfig {
   static const String apkDownloadUrl =
       'https://github.com/ahsxndev/Portfolio/releases/download/v1.0.0/app-release.apk';
 
+
+
+
+  static const String fiverLink = 'https://www.fiverr.com/s/zWgYbZR';
   // ============================================
   // 📧 EMAIL TEMPLATE CONFIGURATION
   // ============================================

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myfolio/core/constants/app_colors.dart';
 import 'package:myfolio/core/services/email_service.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:myfolio/core/config/user_info_config.dart';
 
 class ContactForm extends StatefulWidget {
   const ContactForm({super.key});
@@ -87,35 +84,35 @@ class _ContactFormState extends State<ContactForm> {
                 ),
                 child: _isSubmitting
                     ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.black,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Sending...',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        'Send Message',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.black,
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Sending...',
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                  ],
+                )
+                    : Text(
+                  'Send Message',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
               ),
             ),
           ],
@@ -161,7 +158,9 @@ class _ContactFormState extends State<ContactForm> {
           keyboardType: keyboardType,
           style: const TextStyle(color: Colors.white),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
+            if (value == null || value
+                .trim()
+                .isEmpty) {
               return '$label is required';
             }
             if (label.contains('Email') &&
@@ -215,44 +214,19 @@ class _ContactFormState extends State<ContactForm> {
       final email = emailCtrl.text.trim();
       final message = messageCtrl.text.trim();
 
-      final subject = 'Portfolio Contact Form Message';
-      final body =
-          '''
-Hello ${UserInfoConfig.fullName},
-
-You have received a new message:
-
-Name: $name
-Email: $email
-Message: $message
-
-=== AUTOMATED SIGNATURE ===
-This message was sent through your portfolio contact form.
-''';
-
-      final Uri emailUri = Uri.parse(
-        'mailto:${UserInfoConfig.email}'
-        '?subject=${Uri.encodeComponent(subject)}'
-        '&body=${Uri.encodeComponent(body)}',
+      final success = await EmailService.sendEmailWithEmailJs(
+        name: name,
+        senderEmail: email,
+        message: message,
+        context: context,
       );
-
-      final bool launched = await launchUrl(emailUri);
 
       if (!mounted) return;
 
-      if (launched) {
+      if (success) {
         nameCtrl.clear();
         emailCtrl.clear();
         messageCtrl.clear();
-
-        EmailService.showSuccessSnackbar(
-          context,
-          'Email client opened! Please send the message.',
-        );
-
-        await _showSendOptionsDialog(name, email, message);
-      } else {
-        await _showAlternativeOptionsDialog(name, email, message);
       }
     } catch (e) {
       if (!mounted) return;
@@ -274,175 +248,5 @@ This message was sent through your portfolio contact form.
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
-  }
-
-  /// Show additional sending options after successful email launch
-  Future<void> _showSendOptionsDialog(
-    String name,
-    String email,
-    String message,
-  ) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Message Ready!',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Your email client should have opened with a pre-filled message.',
-              style: TextStyle(color: AppColors.white90),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Additional options:',
-              style: TextStyle(
-                color: AppColors.white70,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Done', style: TextStyle(color: AppColors.white70)),
-          ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              Navigator.pop(context);
-              await EmailService.sendWhatsAppMessage(
-                name: name,
-                senderEmail: email,
-                message: message,
-                context: context,
-              );
-            },
-            icon: const Icon(Icons.message, size: 18),
-            label: const Text('WhatsApp'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF25D366),
-              foregroundColor: Colors.white,
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              final clipboardData =
-                  EmailService.formatContactDetailsForClipboard(
-                    name: name,
-                    senderEmail: email,
-                    message: message,
-                  );
-              await Clipboard.setData(ClipboardData(text: clipboardData));
-
-              if (context.mounted) {
-                Navigator.pop(context);
-                EmailService.showSuccessSnackbar(
-                  context,
-                  'Contact details copied to clipboard!',
-                );
-              }
-            },
-            icon: const Icon(Icons.copy, size: 18),
-            label: const Text('Copy'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.kYellow,
-              foregroundColor: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Show alternative options if email client failed
-  Future<void> _showAlternativeOptionsDialog(
-    String name,
-    String email,
-    String message,
-  ) async {
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Alternative Contact Methods',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'No email client found. Please choose an alternative:',
-              style: TextStyle(color: AppColors.white90),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Your message is ready to be sent through:',
-              style: TextStyle(
-                color: AppColors.white70,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: AppColors.white70)),
-          ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              Navigator.pop(context);
-              await EmailService.sendWhatsAppMessage(
-                name: name,
-                senderEmail: email,
-                message: message,
-                context: context,
-              );
-            },
-            icon: const Icon(Icons.message, size: 18),
-            label: const Text('WhatsApp'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF25D366),
-              foregroundColor: Colors.white,
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              final clipboardData =
-                  EmailService.formatContactDetailsForClipboard(
-                    name: name,
-                    senderEmail: email,
-                    message: message,
-                  );
-              await Clipboard.setData(ClipboardData(text: clipboardData));
-
-              if (context.mounted) {
-                Navigator.pop(context);
-                EmailService.showSuccessSnackbar(
-                  context,
-                  'Contact details copied! You can paste and send manually.',
-                );
-              }
-            },
-            icon: const Icon(Icons.copy, size: 18),
-            label: const Text('Copy Details'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.kYellow,
-              foregroundColor: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

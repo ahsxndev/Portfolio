@@ -87,81 +87,73 @@ class _ServiceDetailModalState extends State<ServiceDetailModal>
         ),
         actions: isMobile
             ? [
-          // Mobile layout - vertical buttons
-          SizedBox(
-            width: double.infinity,
-            child: Column(
-              children: [
+                // Mobile layout - vertical buttons
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => Navigator.of(context).pop('email'),
-                    icon: const Icon(Icons.email, size: 18),
-                    label: const Text('Contact via Email'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _getServiceColor(),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () => Navigator.of(context).pop('email'),
+                          icon: const Icon(Icons.email, size: 18),
+                          label: const Text('Contact via Email'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _getServiceColor(),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              Navigator.of(context).pop('whatsapp'),
+                          icon: const Icon(Icons.message, size: 18),
+                          label: const Text('Contact via WhatsApp'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF25D366),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(null),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(color: AppColors.white70),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => Navigator.of(context).pop('whatsapp'),
-                    icon: const Icon(Icons.message, size: 18),
-                    label: const Text('Contact via WhatsApp'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF25D366),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+              ]
+            : [
+                // Desktop layout - horizontal buttons
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: AppColors.white70),
                   ),
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(null),
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: AppColors.white70),
-                    ),
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.of(context).pop('email'),
+                  icon: const Icon(Icons.email, size: 18),
+                  label: const Text('Send Email'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _getServiceColor(),
+                    foregroundColor: Colors.white,
                   ),
                 ),
               ],
-            ),
-          ),
-        ]
-            : [
-          // Desktop layout - horizontal buttons
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(null),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.white70),
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.of(context).pop('whatsapp'),
-            icon: const Icon(Icons.message, size: 18),
-            label: const Text('WhatsApp'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF25D366),
-              foregroundColor: Colors.white,
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.of(context).pop('email'),
-            icon: const Icon(Icons.email, size: 18),
-            label: const Text('Email'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _getServiceColor(),
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
       ),
     );
 
@@ -173,7 +165,8 @@ class _ServiceDetailModalState extends State<ServiceDetailModal>
       await Future.delayed(const Duration(milliseconds: 100));
 
       if (mounted) {
-        final message = '''I'm interested in your ${widget.service.title} service.
+        final message =
+            '''I'm interested in your ${widget.service.title} service.
 
 Could we schedule a consultation to discuss:
 - Project requirements and scope  
@@ -184,41 +177,155 @@ Please let me know your availability.
 
 Best regards''';
 
-        bool success = false;
-
         if (contactMethod == 'email') {
-          success = await EmailService.sendEmail(
-            name: '[Your Name]',
-            senderEmail: '[Your Email]',
-            message: message,
-            serviceType: widget.service.title,
+          // Show form to get user's name and email
+          await _showContactInfoDialog(
             context: context,
-          );
-
-          if (success && mounted) {
-            EmailService.showSuccessSnackbar(
-              context,
-              'Email client opened! Please fill in your contact details.',
-            );
-          }
-        } else if (contactMethod == 'whatsapp') {
-          success = await EmailService.sendWhatsAppMessage(
-            name: '[Your Name]',
-            senderEmail: '[Your Email]',
+            serviceTitle: widget.service.title,
             message: message,
-            serviceType: widget.service.title,
-            context: context,
           );
-
-          if (success && mounted) {
-            EmailService.showSuccessSnackbar(
-              context,
-              'WhatsApp opened! Please update your details in the message.',
-            );
-          }
         }
       }
     }
+  }
+
+  Future<void> _showContactInfoDialog({
+    required BuildContext context,
+    required String serviceTitle,
+    required String message,
+  }) async {
+    final nameController = TextEditingController();
+    final emailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Your Contact Information',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Full Name',
+                    hintStyle: const TextStyle(color: Color(0x99FFFFFF)),
+                    filled: true,
+                    fillColor: const Color(0x1AFFFFFF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0x33FFFFFF)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0x33FFFFFF)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.kYellow,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Name is required';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: emailController,
+                  style: const TextStyle(color: Colors.white),
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    hintText: 'Email Address',
+                    hintStyle: const TextStyle(color: Color(0x99FFFFFF)),
+                    filled: true,
+                    fillColor: const Color(0x1AFFFFFF),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0x33FFFFFF)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color(0x33FFFFFF)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.kYellow,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Email is required';
+                    }
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
+                      return 'Enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              nameController.dispose();
+              emailController.dispose();
+              Navigator.pop(dialogContext);
+            },
+            child: Text('Cancel', style: TextStyle(color: AppColors.white70)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(dialogContext);
+
+                final success = await EmailService.sendEmailWithEmailJs(
+                  name: nameController.text.trim(),
+                  senderEmail: emailController.text.trim(),
+                  message: message,
+                  serviceType: serviceTitle,
+                  context: context,
+                );
+
+                nameController.dispose();
+                emailController.dispose();
+              }
+            },
+            icon: const Icon(Icons.send, size: 18),
+            label: const Text('Send Email'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.kYellow,
+              foregroundColor: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -380,11 +487,11 @@ Best regards''';
                                   ),
                                   const SizedBox(height: 12),
                                   ..._getServiceFeatures().map(
-                                        (feature) => Padding(
+                                    (feature) => Padding(
                                       padding: const EdgeInsets.only(bottom: 8),
                                       child: Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             margin: const EdgeInsets.only(
@@ -431,7 +538,7 @@ Best regards''';
                                     runSpacing: 8,
                                     children: [
                                       ..._getServiceTechnologies().map(
-                                            (tech) => Container(
+                                        (tech) => Container(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 12,
                                             vertical: 6,
@@ -446,10 +553,10 @@ Best regards''';
                                             ),
                                             border: Border.all(
                                               color:
-                                              AppColors.withCustomOpacity(
-                                                _getServiceColor(),
-                                                0.5,
-                                              ),
+                                                  AppColors.withCustomOpacity(
+                                                    _getServiceColor(),
+                                                    0.5,
+                                                  ),
                                               width: 1,
                                             ),
                                           ),

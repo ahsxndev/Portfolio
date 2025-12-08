@@ -23,7 +23,7 @@ class CustomButtonRow extends StatelessWidget {
       children: [
         CustomButton(
           text: 'Hire me',
-          onTap: () => _openEmailApp(),
+          onTap: () => _fiverLink(),
           tooltip: 'Contact me for job opportunities',
         ),
         SizedBox(width: spacing),
@@ -37,18 +37,14 @@ class CustomButtonRow extends StatelessWidget {
     );
   }
 
-  Future<void> _openEmailApp() async {
-    final String email = SocialLinksConfig.email;
-    final String subject = SocialLinksConfig.emailSubject;
-    final String body = SocialLinksConfig.emailBody;
-
-    final String emailUriString =
-        'mailto:$email?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
-
+  Future<void> _fiverLink() async {
     try {
-      await launchUrl(Uri.parse(emailUriString));
+      final Uri url = Uri.parse(SocialLinksConfig.fiverLink);
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
     } catch (e) {
-      debugPrint('Could not launch email app: $e');
+      debugPrint('Could not download CV: $e');
     }
   }
 
