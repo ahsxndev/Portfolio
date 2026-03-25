@@ -59,8 +59,8 @@ class _ServiceDetailModalState extends State<ServiceDetailModal>
   Future<void> _handleGetStarted() async {
     final isMobile = MediaQuery.of(context).size.width < 600;
 
-    // Show selection dialog for Email or WhatsApp
-    final String? contactMethod = await showDialog<String>(
+    // Show selection dialog exclusively for Email
+    final bool? proceed = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
       builder: (context) => AlertDialog(
@@ -80,93 +80,77 @@ class _ServiceDetailModalState extends State<ServiceDetailModal>
             ),
             const SizedBox(height: 16),
             Text(
-              'Choose how you\'d like to contact us:',
+              'We will contact you via email to discuss your requirements and next steps.',
               style: TextStyle(color: AppColors.white70, fontSize: 14),
             ),
           ],
         ),
         actions: isMobile
             ? [
-                // Mobile layout - vertical buttons
+          // Mobile layout - vertical buttons (Email Only)
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
                 SizedBox(
                   width: double.infinity,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () => Navigator.of(context).pop('email'),
-                          icon: const Icon(Icons.email, size: 18),
-                          label: const Text('Contact via Email'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _getServiceColor(),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              Navigator.of(context).pop('whatsapp'),
-                          icon: const Icon(Icons.message, size: 18),
-                          label: const Text('Contact via WhatsApp'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF25D366),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: () => Navigator.of(context).pop(null),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(color: AppColors.white70),
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    icon: const Icon(Icons.email, size: 18),
+                    label: const Text('Continue to Email'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _getServiceColor(),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
-              ]
-            : [
-                // Desktop layout - horizontal buttons
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(null),
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(color: AppColors.white70),
-                  ),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.of(context).pop('email'),
-                  icon: const Icon(Icons.email, size: 18),
-                  label: const Text('Send Email'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _getServiceColor(),
-                    foregroundColor: Colors.white,
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: AppColors.white70),
+                    ),
                   ),
                 ),
               ],
+            ),
+          ),
+        ]
+            : [
+          // Desktop layout - horizontal buttons (Email Only)
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.white70),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.email, size: 18),
+            label: const Text('Send Email'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _getServiceColor(),
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
 
-    if (contactMethod != null && mounted) {
+    if (proceed == true && mounted) {
       // Close the modal first
       Navigator.of(context).pop();
 
-      // Wait for modal to close
+      // Wait for modal to close smoothly before opening the next dialog
       await Future.delayed(const Duration(milliseconds: 100));
 
       if (mounted) {
-        final message =
-            '''I'm interested in your ${widget.service.title} service.
+        final message = '''I'm interested in your ${widget.service.title} service.
 
 Could we schedule a consultation to discuss:
 - Project requirements and scope  
@@ -177,14 +161,12 @@ Please let me know your availability.
 
 Best regards''';
 
-        if (contactMethod == 'email') {
-          // Show form to get user's name and email
-          await _showContactInfoDialog(
-            context: context,
-            serviceTitle: widget.service.title,
-            message: message,
-          );
-        }
+        // Show form to get user's name and email
+        await _showContactInfoDialog(
+          context: context,
+          serviceTitle: widget.service.title,
+          message: message,
+        );
       }
     }
   }

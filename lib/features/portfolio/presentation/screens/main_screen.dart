@@ -9,8 +9,9 @@ import 'package:myfolio/features/portfolio/presentation/widgets/custom_drawer.da
 import 'package:myfolio/features/portfolio/presentation/widgets/avatar_widget.dart';
 import 'package:myfolio/features/portfolio/presentation/sections/home_section.dart';
 import 'package:myfolio/features/portfolio/presentation/sections/about_section.dart';
+// IMPORTANT: Import your tech stack section!
+import 'package:myfolio/features/portfolio/presentation/sections/tech_stack_section.dart';
 import 'package:myfolio/features/portfolio/presentation/navigation/navigation_controller.dart';
-
 import 'package:myfolio/core/constants/app_text_styles.dart';
 
 class MainScreen extends StatefulWidget {
@@ -26,8 +27,8 @@ class _MainScreenState extends State<MainScreen>
   late final ScrollController _scrollController;
   late final AnimationController _scrollToTopController;
   late final Animation<double> _scrollToTopAnimation;
-  int _activeIndex = 0; // Track active nav item
-  bool _showScrollToTop = false; // Track scroll to top button visibility
+  int _activeIndex = 0;
+  bool _showScrollToTop = false;
 
   @override
   void initState() {
@@ -36,7 +37,6 @@ class _MainScreenState extends State<MainScreen>
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
-    // Initialize scroll to top animation
     _scrollToTopController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -59,7 +59,6 @@ class _MainScreenState extends State<MainScreen>
     final scrollPosition = _scrollController.position.pixels;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Show scroll to top button when user scrolls down more than screen height
     final shouldShow = scrollPosition > screenHeight * 0.5;
     if (shouldShow != _showScrollToTop) {
       setState(() {
@@ -74,25 +73,22 @@ class _MainScreenState extends State<MainScreen>
 
     // Get section positions
     final aboutPosition = _getSectionPosition(navigationController.aboutKey);
-    final servicesPosition = _getSectionPosition(
-      navigationController.servicesKey,
-    );
-    final projectsPosition = _getSectionPosition(
-      navigationController.projectsKey,
-    );
-    final contactPosition = _getSectionPosition(
-      navigationController.contactKey,
-    );
+    final techPosition = _getSectionPosition(navigationController.techKey); // Added
+    final servicesPosition = _getSectionPosition(navigationController.servicesKey);
+    final projectsPosition = _getSectionPosition(navigationController.projectsKey);
+    final contactPosition = _getSectionPosition(navigationController.contactKey);
 
     int newActiveIndex = 0;
 
-    // Determine which section is currently visible
+    // Determine which section is currently visible (Updated for Tech)
     if (scrollPosition >= contactPosition - 200) {
-      newActiveIndex = 4; // Contact
+      newActiveIndex = 5; // Contact
     } else if (scrollPosition >= projectsPosition - 200) {
-      newActiveIndex = 3; // Projects
+      newActiveIndex = 4; // Projects
     } else if (scrollPosition >= servicesPosition - 200) {
-      newActiveIndex = 2; // Services
+      newActiveIndex = 3; // Services
+    } else if (scrollPosition >= techPosition - 200) {
+      newActiveIndex = 2; // Tech Stack
     } else if (scrollPosition >= aboutPosition - 200) {
       newActiveIndex = 1; // About
     } else {
@@ -109,7 +105,7 @@ class _MainScreenState extends State<MainScreen>
   double _getSectionPosition(GlobalKey key) {
     if (key.currentContext != null) {
       final RenderBox renderBox =
-          key.currentContext!.findRenderObject() as RenderBox;
+      key.currentContext!.findRenderObject() as RenderBox;
       final position = renderBox.localToGlobal(Offset.zero);
       return position.dy + _scrollController.position.pixels;
     }
@@ -147,40 +143,54 @@ class _MainScreenState extends State<MainScreen>
         appBar: _buildAppBar(context, isMobile, isTablet, isDesktop),
         body: Stack(
           children: [
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+            // 🌟 ADDED RAWSCROLLBAR TO HIGHLIGHT THE SCROLLER 🌟
+            RawScrollbar(
               controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    key: navigationController.homeKey,
-                    child: const HomeSection(),
-                  ),
-                  SizedBox(height: isMobile ? 50 : 70),
-                  Container(
-                    key: navigationController.aboutKey,
-                    child: const AboutSection(),
-                  ),
-                  SizedBox(height: isMobile ? 60 : 70),
-                  Container(
-                    key: navigationController.servicesKey,
-                    child: const ServicesSection(),
-                  ),
-                  SizedBox(height: isMobile ? 60 : 70),
-                  Container(
-                    key: navigationController.projectsKey,
-                    child: const ProjectsSection(),
-                  ),
-                  SizedBox(height: isMobile ? 60 : 70),
-                  Container(
-                    key: navigationController.contactKey,
-                    child: ContactSection(),
-                  ),
-                  SizedBox(height: isMobile ? 60 : 70),
-                  Footer(),
-                  SizedBox(height: isMobile ? 30 : 40),
-                ],
+              thumbColor: AppColors.kBlack, // Dark scrollbar matches theme on Yellow bg
+              radius: const Radius.circular(8),
+              thickness: isMobile ? 4.0 : 8.0,
+              interactive: true,
+              thumbVisibility: true, // Always show the scrollbar
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      key: navigationController.homeKey,
+                      child: const HomeSection(),
+                    ),
+                    SizedBox(height: isMobile ? 50 : 70),
+                    Container(
+                      key: navigationController.aboutKey,
+                      child: const AboutSection(),
+                    ),
+                    // 🌟 INSERTED TECH STACK SECTION HERE 🌟
+                    Container(
+                      key: navigationController.techKey,
+                      child: const TechStackSection(),
+                    ),
+                    SizedBox(height: isMobile ? 60 : 70),
+                    Container(
+                      key: navigationController.servicesKey,
+                      child: const ServicesSection(),
+                    ),
+                    SizedBox(height: isMobile ? 60 : 70),
+                    Container(
+                      key: navigationController.projectsKey,
+                      child: const ProjectsSection(),
+                    ),
+                    SizedBox(height: isMobile ? 60 : 70),
+                    Container(
+                      key: navigationController.contactKey,
+                      child: ContactSection(),
+                    ),
+                    SizedBox(height: isMobile ? 60 : 70),
+                    Footer(),
+                    SizedBox(height: isMobile ? 30 : 40),
+                  ],
+                ),
               ),
             ),
             // Scroll to Top Button - Only show on small screens
@@ -210,13 +220,12 @@ class _MainScreenState extends State<MainScreen>
   }
 
   PreferredSizeWidget _buildAppBar(
-    BuildContext context,
-    bool isMobile,
-    bool isTablet,
-    bool isDesktop,
-  ) {
+      BuildContext context,
+      bool isMobile,
+      bool isTablet,
+      bool isDesktop,
+      ) {
     if (isDesktop) {
-      // Desktop: Avatar left, nav items right
       final navigationItems = navigationController.getNavigationItems();
       return AppBar(
         shape: const RoundedRectangleBorder(
@@ -239,13 +248,12 @@ class _MainScreenState extends State<MainScreen>
                   isActive: _activeIndex == i,
                   onTap: () => _onNavTap(i, navigationItems[i]),
                 ),
-              const SizedBox(width: 24),
+              const SizedBox(width: 24), // Reduced trailing padding slightly
             ],
           ),
         ],
       );
     } else {
-      // Mobile/Tablet: Default AppBar as before
       return AppBar(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
@@ -259,25 +267,25 @@ class _MainScreenState extends State<MainScreen>
         actions: isDesktop
             ? null
             : [
-                Tooltip(
-                  message: "Open navigation menu",
-                  showDuration: const Duration(seconds: 2),
-                  waitDuration: const Duration(milliseconds: 500),
-                  child: Builder(
-                    builder: (context) => _TapMenuIconButton(
-                      onTap: () => Scaffold.of(context).openEndDrawer(),
-                      isMobile: isMobile,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
+          Tooltip(
+            message: "Open navigation menu",
+            showDuration: const Duration(seconds: 2),
+            waitDuration: const Duration(milliseconds: 500),
+            child: Builder(
+              builder: (context) => _TapMenuIconButton(
+                onTap: () => Scaffold.of(context).openEndDrawer(),
+                isMobile: isMobile,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       );
     }
   }
 }
 
-// Desktop navigation button with hover/active state
+// 🌟 SHRINKED DESKTOP NAV BUTTON 🌟
 class _DesktopNavButton extends StatefulWidget {
   final String label;
   final bool isActive;
@@ -314,18 +322,20 @@ class _DesktopNavButtonState extends State<_DesktopNavButton> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+          // Reduced horizontal margins and paddings so 6 items fit easily!
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           decoration: widget.isActive
               ? BoxDecoration(
-                  color: AppColors.yellow10,
-                  borderRadius: BorderRadius.circular(10),
-                )
+            color: AppColors.yellow10,
+            borderRadius: BorderRadius.circular(10),
+          )
               : null,
           child: Text(
             widget.label,
             style: AppTextStyles.appBarHeading.copyWith(
               color: textColor,
+              fontSize: 24, // Forced smaller font size
               fontWeight: widget.isActive ? FontWeight.bold : FontWeight.w600,
               letterSpacing: 0.5,
             ),
@@ -336,7 +346,6 @@ class _DesktopNavButtonState extends State<_DesktopNavButton> {
   }
 }
 
-// Enhanced tap menu icon button with better animations
 class _TapMenuIconButton extends StatefulWidget {
   final VoidCallback onTap;
   final bool isMobile;
@@ -421,7 +430,6 @@ class _TapMenuIconButtonState extends State<_TapMenuIconButton>
   }
 }
 
-// Professional Scroll to Top Button
 class _ScrollToTopButton extends StatefulWidget {
   final VoidCallback onTap;
 
@@ -471,7 +479,7 @@ class _ScrollToTopButtonState extends State<_ScrollToTopButton>
                 end: Alignment.bottomRight,
                 colors: [
                   AppColors.kBlack,
-                  AppColors.kBlack.withOpacity(0.8),
+                  AppColors.kBlack.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(28),
@@ -482,7 +490,7 @@ class _ScrollToTopButtonState extends State<_ScrollToTopButton>
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: AppColors.kYellow.withOpacity(0.3),
+                  color: AppColors.kYellow.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

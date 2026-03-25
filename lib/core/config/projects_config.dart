@@ -21,13 +21,28 @@ class ProjectsConfig {
   /// List of your projects to showcase in the portfolio
   static const List<ProjectModel> projects = [
     // ============================================
-    // 📱 PROJECT 1
+    // 📱 PROJECT 1 (Highest Impact / Real-World)
     // ============================================
     ProjectModel(
       id: '1',
+      title: 'ACM-W Event Platform',
+      description:
+      'Official cross-platform digital hub for the RCET Celebration of Women in Computing. Features a fully responsive UI, dynamic event schedules, and advanced web routing.',
+      imageUrl: 'assets/images/projects/project6.png', // Remember to add this image!
+      iconUrl: '',
+      technologies: ['Flutter Web', 'go_router', 'Responsive Design'],
+      githubUrl: 'https://github.com/ahsxndev/celebration_acmw',
+      liveUrl: 'https://acmw-celebration.netlify.app/',
+    ),
+
+    // ============================================
+    // 📱 PROJECT 2 (High Tech Relevance / AI)
+    // ============================================
+    ProjectModel(
+      id: '2',
       title: 'VoiceVerse AI',
       description:
-          'A sleek, real-time voice assistant app built with Flutter, enabling users to interact via voice or text.',
+      'A sleek, real-time voice assistant app built with Flutter, enabling users to interact seamlessly via voice or text.',
       imageUrl: 'assets/images/projects/project1.png',
       iconUrl: 'assets/images/projects/icons/icon1.png',
       technologies: ['Flutter', 'Dart', 'Gemini AI'],
@@ -35,13 +50,13 @@ class ProjectsConfig {
     ),
 
     // ============================================
-    // 📱 PROJECT 2
+    // 📱 PROJECT 3 (High Utility / APIs)
     // ============================================
     ProjectModel(
-      id: '2',
+      id: '3',
       title: 'The Holy Qur\'an App',
       description:
-          'Al-Quran mobile app featuring prayer times, accurate Hijri dates, and complete offline support for audio.',
+      'Al-Quran mobile app featuring prayer times, accurate Hijri dates, and complete offline support for audio playback.',
       imageUrl: 'assets/images/projects/project2.png',
       iconUrl: 'assets/images/projects/icons/icon2.png',
       technologies: ['Flutter', 'Dart', 'REST API'],
@@ -49,13 +64,13 @@ class ProjectsConfig {
     ),
 
     // ============================================
-    // 📱 PROJECT 3
+    // 📱 PROJECT 4 (Full-Stack Complexity)
     // ============================================
     ProjectModel(
-      id: '3',
+      id: '4',
       title: 'Instagram Clone',
       description:
-          'Clean, modern Instagram clone featuring real-time feed, image uploads, and secure authentication.',
+      'Clean, modern Instagram clone featuring a real-time feed, image uploads, and secure user authentication.',
       imageUrl: 'assets/images/projects/project3.png',
       iconUrl: 'assets/images/projects/icons/icon3.png',
       technologies: ['Flutter', 'Firebase', 'Provider'],
@@ -63,13 +78,13 @@ class ProjectsConfig {
     ),
 
     // ============================================
-    // 📱 PROJECT 4
+    // 📱 PROJECT 5 (Local Database / Fundamentals)
     // ============================================
     ProjectModel(
-      id: '4',
+      id: '5',
       title: 'Notes App',
       description:
-          'A clean, responsive, and beautifully animated notes app built with Flutter & SQLite for local storage.',
+      'A clean, responsive, and beautifully animated notes app built with Flutter & SQLite for persistent local storage.',
       imageUrl: 'assets/images/projects/project4.png',
       iconUrl: '', // Empty string to trigger fallback icon
       technologies: ['Flutter', 'Dart', 'SQLite'],
@@ -77,33 +92,17 @@ class ProjectsConfig {
     ),
 
     // ============================================
-    // 📱 PROJECT 5
+    // 📱 PROJECT 6 (Data Integration)
     // ============================================
     ProjectModel(
-      id: '5',
+      id: '6',
       title: 'COVID-19 Tracker',
       description:
-          'A real-time COVID-19 tracking application built with Flutter for monitoring global pandemic statistics.',
+      'A real-time COVID-19 tracking application built with Flutter for monitoring global pandemic statistics.',
       imageUrl: 'assets/images/projects/project5.png',
       iconUrl: 'assets/images/projects/icons/icon5.png',
       technologies: ['Flutter', 'Dart', 'REST API'],
       githubUrl: 'https://github.com/ahsxndev/covid19-tracker',
     ),
-
-    // ============================================
-    // 💡 ADD MORE PROJECTS HERE
-    // ============================================
-    //
-    // Copy the ProjectModel structure above and add your own projects:
-    //
-    // ProjectModel(
-    //   id: '6',
-    //   title: 'Your Project Name',
-    //   description: 'Your project description here...',
-    //   imageUrl: 'assets/images/projects/your_project.png',
-    //   iconUrl: 'assets/images/projects/icons/your_icon.png',
-    //   technologies: ['Technology1', 'Technology2', 'Technology3'],
-    //   githubUrl: 'https://github.com/yourusername/your-repo',
-    // ),
   ];
 }

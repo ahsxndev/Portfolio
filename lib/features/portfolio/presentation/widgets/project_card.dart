@@ -17,25 +17,24 @@ class ProjectCard extends StatefulWidget {
 class _ProjectCardState extends State<ProjectCard>
     with SingleTickerProviderStateMixin {
   bool _isHovered = false;
-  bool _isCodeButtonHovered = false;
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _overlayAnimation;
+  late Animation<double> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.08).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
 
-    _overlayAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    _slideAnimation = Tween<double>(begin: 40.0, end: 0.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
   }
 
@@ -60,24 +59,16 @@ class _ProjectCardState extends State<ProjectCard>
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        // Show error message if URL can't be launched
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Could not launch $url'),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text('Could not launch $url'), backgroundColor: Colors.red),
           );
         }
       }
     } catch (e) {
-      // Handle any errors
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error opening URL: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -86,251 +77,154 @@ class _ProjectCardState extends State<ProjectCard>
   @override
   Widget build(BuildContext context) {
     final bool isMobile = Responsive.isMobile(context);
-    final double cardHeight = isMobile ? 250 : 360;
-    final double borderRadius = isMobile ? 16 : 24;
+    // On mobile, we force the "expanded" state so users can always see/tap the buttons
+    final bool isExpanded = isMobile || _isHovered;
 
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: MouseRegion(
-            onEnter: (_) => _onHover(true),
-            onExit: (_) => _onHover(false),
-            child: Container(
-              height: cardHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(borderRadius),
-                boxShadow: [
-                  BoxShadow(
-                    color: _isHovered ? AppColors.black15 : AppColors.black08,
-                    blurRadius: _isHovered ? 20 : 12,
-                    offset: Offset(0, _isHovered ? 8 : 4),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(borderRadius),
-                child: Stack(
-                  children: [
-                    // Background Image
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.yellow10,
-                          image: widget.project.imageUrl.isNotEmpty
-                              ? DecorationImage(
-                                  image: AssetImage(widget.project.imageUrl),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: widget.project.imageUrl.isEmpty
-                            ? Container(
-                                color: AppColors.yellow30,
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.image,
-                                    size: 48,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              )
+    final double cardHeight = isMobile ? 380 : 400;
+    final double borderRadius = 20.0;
+
+    return MouseRegion(
+      onEnter: (_) => _onHover(true),
+      onExit: (_) => _onHover(false),
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Container(
+            height: cardHeight,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(borderRadius),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.kBlack.withValues(alpha: _isHovered ? 0.3 : 0.1),
+                  blurRadius: _isHovered ? 30 : 15,
+                  offset: Offset(0, _isHovered ? 15 : 5),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(borderRadius),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // 1. Zooming Background Image
+                  Transform.scale(
+                    scale: isMobile ? 1.0 : _scaleAnimation.value,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.kBlack,
+                        image: widget.project.imageUrl.isNotEmpty
+                            ? DecorationImage(
+                          image: AssetImage(widget.project.imageUrl),
+                          fit: BoxFit.cover,
+                        )
                             : null,
                       ),
                     ),
+                  ),
 
-                    // Static bottom gradient (always visible)
-                    if (!_isHovered)
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                AppColors.black60,
-                                AppColors.black80,
-                              ],
-                              stops: const [0.0, 0.7, 1.0],
+                  // 2. Premium Gradient Overlay
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          AppColors.kBlack.withValues(alpha: isExpanded ? 0.8 : 0.5),
+                          AppColors.kBlack.withValues(alpha: isExpanded ? 1.0 : 0.9),
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+
+                  // 3. Content (Bottom Aligned)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Tech Stack Chips (Always Visible)
+                          _buildTechnologies(context),
+                          const SizedBox(height: 12),
+
+                          // Title (Always Visible)
+                          Text(
+                            widget.project.title,
+                            style: GoogleFonts.montserrat(
+                              fontSize: isMobile ? 22 : 26,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1.2,
                             ),
                           ),
-                        ),
-                      ),
+                          const SizedBox(height: 12),
 
-                    // Hover Overlay
-                    Positioned.fill(
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color.fromRGBO(
-                                0,
-                                0,
-                                0,
-                                _overlayAnimation.value * 0.7,
+                          // Animated Details (Description + Buttons)
+                          ClipRect(
+                            child: Transform.translate(
+                              offset: Offset(0, isMobile ? 0 : _slideAnimation.value),
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 300),
+                                opacity: isExpanded ? 1.0 : 0.0,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.project.description,
+                                      style: GoogleFonts.montserrat(
+                                        fontSize: 14,
+                                        color: Colors.white.withValues(alpha: 0.8),
+                                        height: 1.5,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    _buildActionButtons(context),
+                                  ],
+                                ),
                               ),
-                              Color.fromRGBO(
-                                0,
-                                0,
-                                0,
-                                _overlayAnimation.value * 0.9,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-
-                    // Content
-                    Positioned.fill(
-                      child: Padding(
-                        padding: EdgeInsets.all(isMobile ? 16 : 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Hover content at top
-                            if (_isHovered) ...[
-                              _buildProjectIcon(context),
-                              const SizedBox(height: 16),
-                            ],
-
-                            // Spacer
-                            const Spacer(),
-
-                            // Title section - Always visible
-                            _buildProjectTitle(context),
-
-                            // Additional hover content
-                            if (_isHovered) ...[
-                              const SizedBox(height: 12),
-                              _buildProjectDescription(context),
-                              const SizedBox(height: 16),
-                              _buildTechnologies(context),
-                              const SizedBox(height: 16),
-                              _buildActionButtons(context),
-                            ] else ...[
-                              const SizedBox(height: 8),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildProjectIcon(BuildContext context) {
-    final bool isMobile = Responsive.isMobile(context);
-    final double iconSize = isMobile ? 48 : 64;
-
-    return Container(
-      width: iconSize,
-      height: iconSize,
-      decoration: BoxDecoration(
-        color: AppColors.kYellow,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black, width: 2),
+          );
+        },
       ),
-      child: widget.project.iconUrl.isNotEmpty
-          ? ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                widget.project.iconUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _getFallbackIcon(),
-              ),
-            )
-          : _getFallbackIcon(),
-    );
-  }
-
-  Widget _getFallbackIcon() {
-    // Show specific icon based on project title
-    IconData iconData;
-
-    if (widget.project.title.toLowerCase().contains('notes')) {
-      iconData = Icons.note_alt;
-    } else if (widget.project.title.toLowerCase().contains('voice') ||
-        widget.project.title.toLowerCase().contains('ai')) {
-      iconData = Icons.mic;
-    } else if (widget.project.title.toLowerCase().contains('quran') ||
-        widget.project.title.toLowerCase().contains('qur')) {
-      iconData = Icons.menu_book;
-    } else if (widget.project.title.toLowerCase().contains('instagram')) {
-      iconData = Icons.camera_alt;
-    } else if (widget.project.title.toLowerCase().contains('covid') ||
-        widget.project.title.toLowerCase().contains('tracker')) {
-      iconData = Icons.coronavirus;
-    } else {
-      iconData = Icons.code;
-    }
-
-    return Icon(iconData, color: Colors.black, size: 32);
-  }
-
-  Widget _buildProjectTitle(BuildContext context) {
-    final bool isMobile = Responsive.isMobile(context);
-
-    return AnimatedDefaultTextStyle(
-      duration: const Duration(milliseconds: 300),
-      style: GoogleFonts.montserrat(
-        fontSize: isMobile ? 20 : 28,
-        fontWeight: FontWeight.w800,
-        color: _isHovered ? AppColors.kYellow : Colors.white,
-      ),
-      child: Text(
-        widget.project.title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Widget _buildProjectDescription(BuildContext context) {
-    final bool isMobile = Responsive.isMobile(context);
-
-    return Text(
-      widget.project.description,
-      style: GoogleFonts.montserrat(
-        fontSize: isMobile ? 14 : 16,
-        color: AppColors.white90,
-        height: 1.4,
-      ),
-      maxLines: 3,
-      overflow: TextOverflow.ellipsis,
     );
   }
 
   Widget _buildTechnologies(BuildContext context) {
     return Wrap(
-      spacing: 6,
-      runSpacing: 6,
+      spacing: 8,
+      runSpacing: 8,
       children: widget.project.technologies.take(3).map((tech) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.yellow20,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.yellow50),
+            color: AppColors.kYellow.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.kYellow.withValues(alpha: 0.5)),
           ),
           child: Text(
             tech,
             style: GoogleFonts.montserrat(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
               color: AppColors.kYellow,
+              letterSpacing: 0.5,
             ),
           ),
         );
@@ -339,64 +233,66 @@ class _ProjectCardState extends State<ProjectCard>
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
       children: [
-        if (widget.project.githubUrl != null) _buildCodeButton(context),
+        if (widget.project.liveUrl != null && widget.project.liveUrl!.isNotEmpty)
+          _buildButton(
+            title: 'Live Preview',
+            icon: Icons.open_in_new,
+            isPrimary: true,
+            onTap: () => _launchUrl(widget.project.liveUrl!),
+          ),
+        if (widget.project.githubUrl != null && widget.project.githubUrl!.isNotEmpty)
+          _buildButton(
+            title: 'View Code',
+            icon: Icons.code,
+            isPrimary: false,
+            onTap: () => _launchUrl(widget.project.githubUrl!),
+          ),
       ],
     );
   }
 
-  Widget _buildCodeButton(BuildContext context) {
-    return Tooltip(
-      message: "View source code on GitHub",
-      showDuration: const Duration(seconds: 2),
-      waitDuration: const Duration(milliseconds: 500),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isCodeButtonHovered = true),
-        onExit: (_) => setState(() => _isCodeButtonHovered = false),
-        child: GestureDetector(
-          onTapDown: (_) => setState(() => _isCodeButtonHovered = true),
-          onTapUp: (_) => setState(() => _isCodeButtonHovered = false),
-          onTapCancel: () => setState(() => _isCodeButtonHovered = false),
-          onTap: () => _launchUrl(widget.project.githubUrl!),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: _isCodeButtonHovered
-                  ? AppColors.kYellow
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.kYellow, width: 2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    Icons.code,
-                    key: ValueKey(_isCodeButtonHovered),
-                    size: 18,
-                    color: _isCodeButtonHovered
-                        ? Colors.black
-                        : AppColors.kYellow,
-                  ),
+  // Reusable Button Builder for consistent design
+  Widget _buildButton({
+    required String title,
+    required IconData icon,
+    required bool isPrimary,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        hoverColor: isPrimary ? Colors.white.withValues(alpha: 0.2) : AppColors.kYellow.withValues(alpha: 0.1),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isPrimary ? AppColors.kYellow : Colors.transparent,
+            border: Border.all(color: AppColors.kYellow, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isPrimary ? AppColors.kBlack : AppColors.kYellow,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.montserrat(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: isPrimary ? AppColors.kBlack : AppColors.kYellow,
                 ),
-                const SizedBox(width: 6),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 200),
-                  style: GoogleFonts.montserrat(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: _isCodeButtonHovered
-                        ? Colors.black
-                        : AppColors.kYellow,
-                  ),
-                  child: const Text('View Code'),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

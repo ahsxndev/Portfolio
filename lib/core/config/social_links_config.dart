@@ -68,7 +68,7 @@ class SocialLinksConfig {
   ///
   /// Example: https://drive.google.com/file/d/1ABC123def456GHI789jkl/view
   static const String cvDownloadUrl =
-      'https://drive.google.com/file/d/1gN9N2Cj4Kqv4B-xQeFqBBSJ07JcmE9l7/view';
+      'https://drive.google.com/file/d/1khCfury9iR4H4waC3lh2dj2gzZh1HujY/view?usp=drivesdk';
 
   /// 🔗 APK Download URL for your Portfolio App
   ///

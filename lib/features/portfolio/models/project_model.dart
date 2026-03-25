@@ -6,6 +6,7 @@ class ProjectModel {
   final String iconUrl;
   final List<String> technologies;
   final String? githubUrl;
+  final String? liveUrl; // <-- ADD THIS LINE
 
   const ProjectModel({
     required this.id,
@@ -15,5 +16,6 @@ class ProjectModel {
     required this.iconUrl,
     required this.technologies,
     this.githubUrl,
+    this.liveUrl, // <-- ADD THIS LINE
   });
 }

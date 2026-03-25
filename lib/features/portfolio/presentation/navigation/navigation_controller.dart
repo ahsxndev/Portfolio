@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 /// Navigation Controller for handling section navigation
 class NavigationController {
   static final NavigationController _instance = NavigationController._internal();
-  
+
   factory NavigationController() => _instance;
-  
+
   NavigationController._internal();
 
   // Global keys for each section
   final GlobalKey homeKey = GlobalKey();
   final GlobalKey aboutKey = GlobalKey();
+  final GlobalKey techKey = GlobalKey(); // Added Tech Key
   final GlobalKey servicesKey = GlobalKey();
   final GlobalKey projectsKey = GlobalKey();
   final GlobalKey contactKey = GlobalKey();
@@ -18,13 +19,16 @@ class NavigationController {
   /// Scroll to a specific section
   void scrollToSection(String sectionName) {
     GlobalKey? targetKey;
-    
+
     switch (sectionName.toLowerCase()) {
       case 'home':
         targetKey = homeKey;
         break;
       case 'about':
         targetKey = aboutKey;
+        break;
+      case 'tech': // Added Tech Case
+        targetKey = techKey;
         break;
       case 'services':
         targetKey = servicesKey;
@@ -61,6 +65,13 @@ class NavigationController {
         icon: Icons.person_outline,
         activeIcon: Icons.person,
         onTap: () => scrollToSection('about'),
+      ),
+      // Added Tech Stack Navigation Item
+      NavigationItem(
+        title: 'Tech',
+        icon: Icons.code_outlined,
+        activeIcon: Icons.code,
+        onTap: () => scrollToSection('tech'),
       ),
       NavigationItem(
         title: 'Services',

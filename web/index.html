@@ -1,38 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
 
-  <!-- iOS meta tags & icons -->
+  <title>Ahsan Zaman | Ahsan Dev | Flutter Developer</title>
+  <meta name="description" content="Portfolio of Ahsan Zaman (Ahsan Dev), a passionate Software Engineer and Flutter Developer specializing in cross-platform mobile and web applications.">
+  <meta name="keywords" content="Ahsan, Ahsan Zaman, Ahsan Dev, Ahsan Developer, Flutter Developer, Mobile App Developer, Software Engineer, UET Lahore, Pakistan, UI/UX Designer, Dart">
+  <meta name="author" content="Ahsan Zaman">
+  <link rel="canonical" href="https://ahsxndev.github.io/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ahsxndev.github.io/">
+  <meta property="og:title" content="Ahsan Zaman | Ahsan Dev | Software Engineer">
+  <meta property="og:description" content="Explore the portfolio of Ahsan Zaman, a Flutter Developer building elegant, high-performance mobile and web apps.">
+  <meta property="og:image" content="https://ahsxndev.github.io/icons/Icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ahsan Zaman | Ahsan Dev">
+  <meta name="twitter:description" content="Explore the portfolio of Ahsan Zaman, a Flutter Developer building elegant mobile and web apps.">
+  <meta name="twitter:image" content="https://ahsxndev.github.io/icons/Icon-512.png">
+
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="myfolio">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ahsan Dev">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Ahsan</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: #1A1A1A; /* Matches your dark theme */
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    .splash-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .splash-logo {
+      width: 120px;
+      height: 120px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    .splash-text {
+      margin-top: 24px;
+      color: #FFDD55; /* Matches your yellow accent */
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      animation: fade 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fade {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+<div class="splash-container" id="splash">
+  <img class="splash-logo" src="icons/Icon-192.png" alt="Ahsan Dev Logo" />
+  <div class="splash-text">AHSAN DEV</div>
+</div>
+
+<script>
+  window.addEventListener('load', function(ev) {
+    // Download main.dart.js
+    _flutter.loader.load({
+      serviceWorker: {
+        serviceWorkerVersion: serviceWorkerVersion,
+      },
+      onEntrypointLoaded: function(engineInitializer) {
+        engineInitializer.initializeEngine().then(function(appRunner) {
+          // Remove the splash screen right before running the app
+          if (document.getElementById('splash')) {
+            document.getElementById('splash').remove();
+          }
+          appRunner.runApp();
+        });
+      }
+    });
+  });
+</script>
+<script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

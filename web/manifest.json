@@ -1,11 +1,11 @@
 {
-    "name": "Ahsan",
-    "short_name": "Ahsan",
+    "name": "Ahsan Zaman | Flutter Developer",
+    "short_name": "Ahsan Dev",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1A1A1A",
+    "theme_color": "#FFDD55",
+    "description": "Portfolio of Ahsan Zaman (Ahsan Dev), a specialized Flutter Developer and Software Engineer building cross-platform apps.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -6,9 +6,9 @@ import 'package:myfolio/core/constants/app_colors.dart';
 import 'package:myfolio/core/constants/app_text_styles.dart';
 import 'package:myfolio/features/portfolio/presentation/widgets/image_box.dart';
 import 'package:myfolio/core/config/user_info_config.dart';
-
 import 'package:myfolio/core/constants/responsive.dart';
 import '../widgets/custom_button_row.dart';
+
 
 class HomeSection extends StatelessWidget {
   const HomeSection({super.key});
@@ -17,40 +17,51 @@ class HomeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isMobile = Responsive.isMobile(context);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 30 : 60,
-        horizontal: isMobile ? 24 : 24,
-      ),
-      width: double.infinity,
-      child: isMobile
-          ? Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // ✅ Left align for mobile
-              children: [
-                _TextContent(isMobile: true),
-                const SizedBox(height: 40),
-                // ✅ Show image only on mobile in home section
-                Center(child: const ImageBox()),
-                const SizedBox(height: 32),
-                // ✅ Only ONE button row - at the bottom on mobile
-                const CustomButtonRow(isMobile: true),
-              ],
-            )
-          : Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: _TextContent(isMobile: false),
-                  ),
+    // Wrapped the entire Home Area and Tech Stack in a Column
+    return Column(
+      children: [
+        // ==========================================
+        // 1. THE HERO AREA (Your original HomeSection)
+        // ==========================================
+        Container(
+          padding: EdgeInsets.symmetric(
+            vertical: isMobile ? 30 : 60,
+            horizontal: isMobile ? 24 : 24,
+          ),
+          width: double.infinity,
+          child: isMobile
+              ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const _TextContent(isMobile: true),
+              const SizedBox(height: 40),
+              // STATIC on mobile: Pass false or disable the hover effect
+              const Center(child: ImageBox(isAnimation: false)),
+              const SizedBox(height: 32),
+              const CustomButtonRow(isMobile: true),
+            ],
+          )
+              : Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: const _TextContent(isMobile: false),
                 ),
-                const SizedBox(width: 40),
-                const ImageBox(),
-              ],
-            ),
+              ),
+              const SizedBox(width: 40),
+              // HOVER ENABLED on Desktop/Tablet
+              const ImageBox(isAnimation: true),
+            ],
+          ),
+        ),
+
+        // Add some spacing between the Hero Area and the Tech Stack
+
+
+      ],
     );
   }
 }
@@ -63,25 +74,23 @@ class _TextContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // ✅ Always start-aligned
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Mobile-optimized heading
         Text(
           'Hello,\nI\'m ${UserInfoConfig.firstName}',
           style: isMobile
               ? AppTextStyles.heading.copyWith(
-                  color: AppColors.kBlack,
-                  height: 1.1,
-                  fontSize: 48, // Better mobile size
-                )
+            color: AppColors.kBlack,
+            height: 1.1,
+            fontSize: 48,
+          )
               : AppTextStyles.heading.copyWith(
-                  color: AppColors.kBlack,
-                  height: 1.1,
-                ),
+            color: AppColors.kBlack,
+            height: 1.1,
+          ),
         ),
         const SizedBox(height: 20),
 
-        // Enhanced animated text section - better mobile layout
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -92,7 +101,6 @@ class _TextContent extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              // ✅ Use Expanded to handle text overflow properly
               child: AnimatedTextKit(
                 repeatForever: true,
                 pause: const Duration(milliseconds: 1000),
@@ -116,7 +124,7 @@ class _TextContent extends StatelessWidget {
                     speed: const Duration(milliseconds: 70),
                   ),
                   TyperAnimatedText(
-                    'Technical Writer',
+                    'ACM Web Master', // Added your new role here too!
                     textStyle: GoogleFonts.montserrat(
                       fontSize: isMobile ? 22 : 25,
                       fontWeight: FontWeight.w600,
@@ -130,7 +138,6 @@ class _TextContent extends StatelessWidget {
           ],
         ),
 
-        // ✅ Only show buttons on desktop - NOT on mobile
         if (!isMobile) ...[
           const SizedBox(height: 36),
           const CustomButtonRow(isMobile: false),

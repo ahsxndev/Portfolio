@@ -7,7 +7,9 @@ import 'package:myfolio/core/constants/app_colors.dart';
 import 'package:myfolio/core/constants/responsive.dart';
 import 'package:myfolio/features/portfolio/models/project_model.dart';
 
-// Carousel widget for mobile
+// ==========================================
+// CAROUSEL WIDGET
+// ==========================================
 class MobileProjectCarousel extends StatefulWidget {
   final List<ProjectModel> projects;
   const MobileProjectCarousel({super.key, required this.projects});
@@ -23,8 +25,8 @@ class _MobileProjectCarouselState extends State<MobileProjectCarousel> {
   bool _isAnyCardFlipped = false;
 
   static const double fixedCardWidth = 500;
-  static const double fixedCardHeight = 300; // 240 + 15
-  static const double cardGap = 200; // How much side peek you want
+  static const double fixedCardHeight = 300;
+  static const double cardGap = 200;
 
   @override
   void initState() {
@@ -86,20 +88,20 @@ class _MobileProjectCarouselState extends State<MobileProjectCarousel> {
         children: widget.projects
             .map(
               (project) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: MobileProjectCard(
-                  project: project,
-                  cardWidth: fixedCardWidth,
-                  cardHeight: fixedCardHeight,
-                ),
-              ),
-            )
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: MobileProjectCard(
+              project: project,
+              cardWidth: fixedCardWidth,
+              cardHeight: fixedCardHeight,
+            ),
+          ),
+        )
             .toList(),
       );
     }
     return SizedBox(
       height: fixedCardHeight,
-      width: double.infinity, // allow max width
+      width: double.infinity,
       child: Center(
         child: SizedBox(
           width: fixedCardWidth,
@@ -133,7 +135,9 @@ class _MobileProjectCarouselState extends State<MobileProjectCarousel> {
   }
 }
 
-// Individual project card for mobile
+// ==========================================
+// INDIVIDUAL MOBILE CARD
+// ==========================================
 class MobileProjectCard extends StatefulWidget {
   final ProjectModel project;
   final bool isFocused;
@@ -159,7 +163,6 @@ class MobileProjectCard extends StatefulWidget {
 class _MobileProjectCardState extends State<MobileProjectCard>
     with TickerProviderStateMixin {
   bool _isFlipped = false;
-  bool _isCodeButtonHovered = false;
   Timer? _flipBackTimer;
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
@@ -184,13 +187,27 @@ class _MobileProjectCardState extends State<MobileProjectCard>
     super.dispose();
   }
 
+  // Robust URL Launcher for Mobile
+  Future<void> _launchUrl(String url) async {
+    try {
+      final Uri uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Error launching URL: $e');
+    }
+  }
+
   void _handleCardTap() {
     if (!_isFlipped) {
       setState(() => _isFlipped = true);
       widget.onFlipChanged?.call(true);
       _flipController.forward();
+
+      // Auto flip back after 6 seconds (giving them more time to read/click on mobile)
       _flipBackTimer?.cancel();
-      _flipBackTimer = Timer(const Duration(seconds: 4), () {
+      _flipBackTimer = Timer(const Duration(seconds: 6), () {
         if (mounted && _isFlipped) {
           setState(() => _isFlipped = false);
           widget.onFlipChanged?.call(false);
@@ -231,10 +248,10 @@ class _MobileProjectCardState extends State<MobileProjectCard>
                   child: _flipAnimation.value < 0.5
                       ? _buildFrontCard()
                       : Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.identity()..rotateY(math.pi),
-                          child: _buildBackCard(),
-                        ),
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateY(math.pi),
+                    child: _buildBackCard(),
+                  ),
                 ),
               ),
             ),
@@ -254,18 +271,18 @@ class _MobileProjectCardState extends State<MobileProjectCard>
               color: AppColors.yellow10,
               image: widget.project.imageUrl.isNotEmpty
                   ? DecorationImage(
-                      image: AssetImage(widget.project.imageUrl),
-                      fit: BoxFit.cover,
-                    )
+                image: AssetImage(widget.project.imageUrl),
+                fit: BoxFit.cover,
+              )
                   : null,
             ),
             child: widget.project.imageUrl.isEmpty
                 ? Container(
-                    color: AppColors.yellow30,
-                    child: const Center(
-                      child: Icon(Icons.image, size: 32, color: Colors.black54),
-                    ),
-                  )
+              color: AppColors.yellow30,
+              child: const Center(
+                child: Icon(Icons.image, size: 32, color: Colors.black54),
+              ),
+            )
                 : null,
           ),
         ),
@@ -401,18 +418,18 @@ class _MobileProjectCardState extends State<MobileProjectCard>
               ),
               child: widget.project.iconUrl.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.asset(
-                        widget.project.iconUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.code,
-                              color: Colors.black,
-                              size: 18,
-                            ),
-                      ),
-                    )
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(
+                  widget.project.iconUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                  const Icon(
+                    Icons.code,
+                    color: Colors.black,
+                    size: 18,
+                  ),
+                ),
+              )
                   : const Icon(Icons.code, color: Colors.black, size: 18),
             ),
 
@@ -446,18 +463,6 @@ class _MobileProjectCardState extends State<MobileProjectCard>
 
             const Spacer(),
 
-            // Technologies label
-            Text(
-              'Technologies:',
-              style: GoogleFonts.montserrat(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.kYellow,
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
             // Technologies
             Wrap(
               spacing: 6,
@@ -476,7 +481,7 @@ class _MobileProjectCardState extends State<MobileProjectCard>
                     tech,
                     style: GoogleFonts.montserrat(
                       fontSize: 10,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
@@ -484,71 +489,82 @@ class _MobileProjectCardState extends State<MobileProjectCard>
               }).toList(),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // GitHub button
-            if (widget.project.githubUrl != null) _buildCodeButton(),
+            // ACTION BUTTONS (Live + Code)
+            _buildActionButtons(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCodeButton() {
-    return Tooltip(
-      message: "View source code on GitHub",
-      showDuration: const Duration(seconds: 2),
-      waitDuration: const Duration(milliseconds: 500),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isCodeButtonHovered = true),
-        onExit: (_) => setState(() => _isCodeButtonHovered = false),
-        child: GestureDetector(
-          onTapDown: (_) => setState(() => _isCodeButtonHovered = true),
-          onTapUp: (_) => setState(() => _isCodeButtonHovered = false),
-          onTapCancel: () => setState(() => _isCodeButtonHovered = false),
-          onTap: () async {
-            try {
-              final Uri uri = Uri.parse(widget.project.githubUrl!);
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(uri, mode: LaunchMode.externalApplication);
-              }
-            } catch (e) {
-              // Handle error
-            }
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: _isCodeButtonHovered
-                  ? AppColors.kYellow
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(7),
-              border: Border.all(color: AppColors.kYellow, width: 2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.code,
-                  size: 13,
-                  color: _isCodeButtonHovered
-                      ? Colors.black
-                      : AppColors.kYellow,
+  // Improved Action Buttons for Mobile
+  Widget _buildActionButtons() {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        if (widget.project.liveUrl != null && widget.project.liveUrl!.isNotEmpty)
+          _buildButton(
+            title: 'Live',
+            icon: Icons.open_in_new,
+            isPrimary: true,
+            onTap: () => _launchUrl(widget.project.liveUrl!),
+          ),
+        if (widget.project.githubUrl != null && widget.project.githubUrl!.isNotEmpty)
+          _buildButton(
+            title: 'Code',
+            icon: Icons.code,
+            isPrimary: false,
+            onTap: () => _launchUrl(widget.project.githubUrl!),
+          ),
+      ],
+    );
+  }
+
+  // Reusable Native Mobile Button
+  Widget _buildButton({
+    required String title,
+    required IconData icon,
+    required bool isPrimary,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          // Cancel auto-flip when they interact with a button
+          _flipBackTimer?.cancel();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(6),
+        splashColor: isPrimary ? Colors.white24 : AppColors.kYellow.withValues(alpha: 0.2),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: isPrimary ? AppColors.kYellow : Colors.transparent,
+            border: Border.all(color: AppColors.kYellow, width: 1.5),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: isPrimary ? Colors.black : AppColors.kYellow,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                title,
+                style: GoogleFonts.montserrat(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isPrimary ? Colors.black : AppColors.kYellow,
                 ),
-                const SizedBox(width: 5),
-                Text(
-                  'View Code',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: _isCodeButtonHovered
-                        ? Colors.black
-                        : AppColors.kYellow,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

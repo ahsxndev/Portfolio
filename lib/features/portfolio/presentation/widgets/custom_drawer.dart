@@ -49,19 +49,19 @@ class CustomDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Section
-              _buildDrawerHeader(isTablet),
+              _buildDrawerHeader(isTablet, isMobile),
               // Navigation Items
               Expanded(
                 child: _buildNavigationItems(
                   context,
                   navigationController,
                   isTablet,
-                  isSmallScreen,
+                  isMobile,
                   activeIndex,
                 ),
               ),
               // Footer always at the bottom
-              _buildDrawerFooter(context, isTablet, isSmallScreen),
+              _buildDrawerFooter(context, isTablet, isMobile),
             ],
           ),
         ),
@@ -69,9 +69,9 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildDrawerHeader(bool isTablet) {
+  Widget _buildDrawerHeader(bool isTablet, bool isMobile) {
     return Container(
-      padding: EdgeInsets.all(isTablet ? 24 : 20),
+      padding: EdgeInsets.all(isMobile ? 16 : (isTablet ? 24 : 20)),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -85,27 +85,27 @@ class CustomDrawer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: isTablet ? 22 : 16),
-            // Avatar
+            SizedBox(height: isMobile ? 8 : (isTablet ? 22 : 16)),
+            // Avatar (Scaled down slightly on mobile to save space)
             Transform.scale(
-              scale: isTablet ? 1.2 : 1.0,
+              scale: isMobile ? 0.85 : (isTablet ? 1.2 : 1.0),
               child: AvatarWidget(fromDrawer: true),
             ),
-            SizedBox(height: isTablet ? 18 : 14),
+            SizedBox(height: isMobile ? 8 : (isTablet ? 18 : 14)),
             // Name and Title
             Text(
               UserInfoConfig.fullName,
               style: GoogleFonts.montserrat(
-                fontSize: isTablet ? 20 : 16,
+                fontSize: isMobile ? 16 : (isTablet ? 20 : 16),
                 fontWeight: FontWeight.w700,
                 color: AppColors.kYellow,
               ),
             ),
-            SizedBox(height: isTablet ? 6 : 4),
+            SizedBox(height: isMobile ? 2 : (isTablet ? 6 : 4)),
             Text(
               UserInfoConfig.jobTitle,
               style: GoogleFonts.montserrat(
-                fontSize: isTablet ? 16 : 12,
+                fontSize: isMobile ? 12 : (isTablet ? 16 : 12),
                 fontWeight: FontWeight.w400,
                 color: AppColors.white80,
               ),
@@ -117,18 +117,18 @@ class CustomDrawer extends StatelessWidget {
   }
 
   Widget _buildNavigationItems(
-    BuildContext context,
-    NavigationController navigationController,
-    bool isTablet,
-    bool isSmallScreen,
-    int activeIndex,
-  ) {
+      BuildContext context,
+      NavigationController navigationController,
+      bool isTablet,
+      bool isMobile,
+      int activeIndex,
+      ) {
     final navigationItems = navigationController.getNavigationItems();
 
     return ListView.builder(
       padding: EdgeInsets.symmetric(
-        vertical: isTablet ? 20 : 16,
-        horizontal: isTablet ? 16 : 12,
+        vertical: isMobile ? 12 : (isTablet ? 20 : 16),
+        horizontal: isMobile ? 12 : (isTablet ? 16 : 12),
       ),
       itemCount: navigationItems.length,
       itemBuilder: (context, index) {
@@ -138,7 +138,7 @@ class CustomDrawer extends StatelessWidget {
           context,
           item,
           isTablet,
-          isSmallScreen,
+          isMobile,
           isActive,
         );
       },
@@ -146,46 +146,34 @@ class CustomDrawer extends StatelessWidget {
   }
 
   Widget _buildNavigationTile(
-    BuildContext context,
-    NavigationItem item,
-    bool isTablet,
-    bool isSmallScreen,
-    bool isActive,
-  ) {
+      BuildContext context,
+      NavigationItem item,
+      bool isTablet,
+      bool isMobile,
+      bool isActive,
+      ) {
     return Container(
-      margin: EdgeInsets.only(
-        bottom: isSmallScreen
-            ? 15
-            : isTablet
-            ? 12
-            : 8,
-      ),
+      // Reduced bottom margin on mobile to pack items tighter
+      margin: EdgeInsets.only(bottom: isMobile ? 8 : (isTablet ? 12 : 8)),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         child: InkWell(
           onTap: () {
             item.onTap();
             Navigator.of(context).pop(); // Close drawer after navigation
           },
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           splashColor: AppColors.yellow10,
           highlightColor: AppColors.yellow05,
           child: Container(
+            // Reduced padding on mobile
             padding: EdgeInsets.symmetric(
-              horizontal: isSmallScreen
-                  ? 20
-                  : isTablet
-                  ? 20
-                  : 16,
-              vertical: isSmallScreen
-                  ? 16
-                  : isTablet
-                  ? 16
-                  : 12,
+              horizontal: isMobile ? 14 : (isTablet ? 20 : 16),
+              vertical: isMobile ? 10 : (isTablet ? 16 : 12),
             ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: isActive ? AppColors.kYellow : AppColors.white10,
                 width: isActive ? 2 : 1,
@@ -194,27 +182,20 @@ class CustomDrawer extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Icon
+                // Icon (Smaller on mobile)
                 Icon(
                   isActive ? item.activeIcon : item.icon,
                   color: isActive ? AppColors.kYellow : AppColors.kYellow,
-                  size: isSmallScreen
-                      ? 30
-                      : isTablet
-                      ? 26
-                      : 22,
+                  size: isMobile ? 18 : (isTablet ? 26 : 22),
                 ),
-                SizedBox(width: isTablet ? 16 : 12),
+                SizedBox(width: isMobile ? 12 : (isTablet ? 16 : 12)),
                 // Title
                 Expanded(
                   child: Text(
                     item.title,
                     style: GoogleFonts.montserrat(
-                      fontSize: isSmallScreen
-                          ? 20
-                          : isTablet
-                          ? 18
-                          : 16,
+                      // Smaller font on mobile
+                      fontSize: isMobile ? 14 : (isTablet ? 18 : 16),
                       fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
                       color: isActive ? AppColors.kYellow : Colors.white,
                     ),
@@ -224,7 +205,7 @@ class CustomDrawer extends StatelessWidget {
                 Icon(
                   isActive ? Icons.arrow_forward : Icons.arrow_forward_ios,
                   color: isActive ? AppColors.kYellow : AppColors.white40,
-                  size: isTablet ? 18 : 14,
+                  size: isMobile ? 12 : (isTablet ? 18 : 14),
                 ),
               ],
             ),
@@ -235,16 +216,16 @@ class CustomDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerFooter(
-    BuildContext context,
-    bool isTablet,
-    bool isSmallScreen,
-  ) {
+      BuildContext context,
+      bool isTablet,
+      bool isMobile,
+      ) {
     return Padding(
       padding: EdgeInsets.only(
-        left: isTablet ? 24 : 10,
-        right: isTablet ? 24 : 10,
-        bottom: isTablet ? 18 : 12,
-        top: isTablet ? 18 : 12,
+        left: isMobile ? 10 : (isTablet ? 24 : 10),
+        right: isMobile ? 10 : (isTablet ? 24 : 10),
+        bottom: isMobile ? 10 : (isTablet ? 18 : 12),
+        top: isMobile ? 10 : (isTablet ? 18 : 12),
       ),
       child: Column(
         children: [
@@ -261,7 +242,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildSocialIconWithLabel(
                   icon: FontAwesomeIcons.github,
                   label: "GitHub",
-                  isSmallScreen: isSmallScreen,
+                  isMobile: isMobile,
                   isTablet: isTablet,
                   onTap: () {
                     launchUrl(
@@ -273,7 +254,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildSocialIconWithLabel(
                   icon: FontAwesomeIcons.google,
                   label: "Gmail",
-                  isSmallScreen: isSmallScreen,
+                  isMobile: isMobile,
                   isTablet: isTablet,
                   onTap: () {
                     launchUrl(Uri.parse("mailto:${SocialLinksConfig.email}"));
@@ -282,7 +263,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildSocialIconWithLabel(
                   icon: FontAwesomeIcons.whatsapp,
                   label: "WhatsApp",
-                  isSmallScreen: isSmallScreen,
+                  isMobile: isMobile,
                   isTablet: isTablet,
                   onTap: () {
                     launchUrl(
@@ -296,7 +277,7 @@ class CustomDrawer extends StatelessWidget {
                 _buildSocialIconWithLabel(
                   icon: FontAwesomeIcons.link,
                   label: "Linktree",
-                  isSmallScreen: isSmallScreen,
+                  isMobile: isMobile,
                   isTablet: isTablet,
                   onTap: () {
                     launchUrl(
@@ -308,14 +289,14 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
 
-          SizedBox(height: isTablet ? 12 : 10),
+          SizedBox(height: isMobile ? 8 : (isTablet ? 12 : 10)),
           // Copyright at the very bottom
           Align(
             alignment: Alignment.center,
             child: Text(
               '© 2025 Portfolio',
               style: GoogleFonts.montserrat(
-                fontSize: isTablet ? 14 : 11,
+                fontSize: isMobile ? 10 : (isTablet ? 14 : 11),
                 fontWeight: FontWeight.w400,
                 color: AppColors.white60,
               ),
@@ -330,7 +311,7 @@ class CustomDrawer extends StatelessWidget {
     required IconData icon,
     required String label,
     required bool isTablet,
-    required bool isSmallScreen,
+    required bool isMobile,
     required VoidCallback onTap,
   }) {
     return Tooltip(
@@ -343,7 +324,7 @@ class CustomDrawer extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(isTablet ? 12 : 10),
+              padding: EdgeInsets.all(isMobile ? 8 : (isTablet ? 12 : 10)),
               decoration: BoxDecoration(
                 color: AppColors.white05,
                 borderRadius: BorderRadius.circular(8),
@@ -352,14 +333,15 @@ class CustomDrawer extends StatelessWidget {
               child: FaIcon(
                 icon,
                 color: AppColors.kYellow,
-                size: isSmallScreen ? 25 : 20,
+                // Scaled down social icons for mobile
+                size: isMobile ? 16 : 20,
               ),
             ),
             SizedBox(height: 4),
             Text(
               label,
               style: GoogleFonts.montserrat(
-                fontSize: isTablet ? 11 : 9,
+                fontSize: isMobile ? 8 : (isTablet ? 11 : 9),
                 fontWeight: FontWeight.w500,
                 color: AppColors.white80,
               ),
